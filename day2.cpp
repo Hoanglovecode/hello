@@ -5,7 +5,6 @@ int main()
 {
   cout<<"max của  kiểu int là: "<<INT_MAX<<endl;
   cout<<"min của kiểu int là: "<<INT_MIN<<endl;
-  
   cout<<"max của  kiểu short là: "<<SHRT_MAX<<endl;
   cout<<"min của kiểu short là: "<<SHRT_MIN<<endl;
   //khai báo

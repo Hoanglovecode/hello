@@ -10,11 +10,11 @@ ctrl k f chỉ format vùng bôi đen
 ctrl h giúp điều chỉnh 1 biến bất kì hết cả đoạn
 */
  cout<< "heloo văn hoàng\n";
- double toan,li,dtb;
- cout<<"xin mời nhập điểm toán: ";
- cin>>toan;
- cout<<"xin mời nhập điểm lí: ";
- cin>>li;
+ double toan, li, dtb;
+ cout << "xin mời nhập điểm toán: ";
+ cin >> toan;
+ cout << "xin mời nhập điểm lí: ";
+ cin >> li;
  dtb=(toan+li)/2;
  cout << "điểm trung bình bạn là: " << dtb << "\n";
  // 2 cách kết thúc dòng
