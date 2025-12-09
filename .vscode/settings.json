@@ -87,6 +87,12 @@
         "typeindex": "cpp",
         "typeinfo": "cpp",
         "valarray": "cpp",
-        "variant": "cpp"
-    }
+        "variant": "cpp",
+        "math.h": "c",
+        "string.h": "c"
+    },
+    "python-envs.defaultEnvManager": "ms-python.python:system",
+    "python-envs.pythonProjects": [],
+    "material-icon-theme.activeIconPack": "angular",
+    "material-icon-theme.enableLogging": false
 }
