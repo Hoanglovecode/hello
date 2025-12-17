@@ -15,8 +15,9 @@ int cmp(const void*a,const void*b){
 int main(){
 int n,k;
 scanf("%d %d",&n, &k);
+int *a = (int*)malloc(n * sizeof(int));
 //Cấp phát động giúp tối ưu run time
-int *a = (int*)malloc(n * sizeof(int));//n có thể tối đa là 1 tỷ
+int *a=(int*)malloc(n*sizeof(int));//n có thể tối đa là 1 tỷ
 for(int i=0;i<n;i++) scanf("%d",&a[i]);
 //sắp xếp tăng dần
 qsort(a,n,sizeof(int),cmp);
