@@ -1,0 +1,7 @@
+Gia tri cua head la:0x23ec95d1980
+Giu lieu ma head node quan ly la:1
+Dia chi cua node tiep theo sau head la:0
+Danh sach sau khi them cac phan tu vao dau:
+10 9 8 7 6 5 4 3 2 1 
+So luong node trong danh sach la:10
+0 1 2 3 4 5 6 7 8 9 10 11 12 
