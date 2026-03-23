@@ -25,8 +25,27 @@ int main(){
       cin>>ds[i].gpa;
       cin.ignore();//vì đây là loop và next là getline
    }
-   sort(ds,ds+n);//sort decline
+   sort(ds,ds+n);//sort ascending depending on line 12
    for(sinhvien x:ds){
       cout<<x.sothich.sports<<" "<<x.msv<<" "<<x.ten<<" "<<x.gpa<<endl;
    }
 }
+/*input.txt
+4
+badminton
+102250068
+A
+3.89
+football
+102250069
+B
+3.36
+volleyball
+102250070
+C
+3.67
+basketball
+102250071
+D
+3.24
+*/

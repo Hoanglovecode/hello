@@ -2,29 +2,29 @@
 using namespace std;
 struct node{
     int data;
-    struct node *next;
+    node *next;
 };
 typedef struct node node;
-//makenewnode
+//makenewnote
 node *makenewnode(int x){
     node *newnode=new node;
     newnode->data=x;
     newnode->next=NULL;
     return newnode;
 }
+//review
+void review(node *head){
+    if(head==NULL)return;
+    while(head!=NULL){
+        cout<<head->data<<' ';
+        head=head->next;
+    }
+}
 //count
 int count(node *head){
     int dem=0;
     while(head!=NULL){
         dem++;
-        head=head->next;
-    }
-    return dem;
-}
-//review
-void review(node*head){
-    while(head!=NULL){
-        cout<<head->data<<' ';
         head=head->next;
     }
 }
@@ -47,41 +47,36 @@ void pushback(node *&head,int x){
     tmp->next=nodeB;
 }
 //insert
-void insert(node *&head,int k,int x){
+void insert(node*&head,int x,int k){
+    node *nodeC=makenewnode(x);
     int n=count(head);
-    if(k<1||k>n+1){
-        cout<<"invalide insert";
-        return;
+    if(k<1 || k>n+1){
+        cout<<"Invalid insert"<<endl;return;
     }
     if(k==1){
-        pushfront(head,x);
-        return;
+        pushfront(head,x);return;
     }
     node *tmp=head;
-    for(int i=1;i<=k-2;i++){
+    for(int i=1;i<k-1;i++){
         tmp=tmp->next;
     }
-    node *nodek=makenewnode(x);
-    nodek->next=tmp->next;
-    tmp->next=nodek;
+    nodeC->next=tmp->next;
+    tmp->next=nodeC;
 }
 //popfront
 void popfront(node *&head){
-    if(head==NULL){
-        return;
-    }
+    if(head==NULL)return;
     node *tmp=head;
     head=tmp->next;
     delete(tmp);
 }
 //popback
-void popback(node *&head){
+void popback(node*&head){
     if(head==NULL)return;
-    node *tmp=head;
+    node*tmp=head;
     if(tmp->next==NULL){
-        delete(tmp);
-        head=NULL;
-        return;
+        delete tmp;
+        head=NULL;return;
     }
     while(tmp->next->next!=NULL){
         tmp=tmp->next;
@@ -91,21 +86,31 @@ void popback(node *&head){
     delete(last);
 }
 //popmiddle
-void popmiddle(node *&head,int k,int x){
+void popmiddle(node *&head,int k){
+    if(head==NULL)return;
+    node *tmp=head;
     int n=count(head);
     if(k<1||k>n){
-        cout<<"invalid pop"<<' ';return;
+        cout<<"ERROR"<<endl;
     }
     if(k==1){
         popfront(head);return;
     }
-    node *tmp=head;
-    for(int i=1;i<=k-2;i++){
+    for(int i=1;i<k-1;i++){
         tmp=tmp->next;
     }
-    node *nodek=tmp->next;
-    tmp->next=nodek->next;
-    delete(nodek);
+    node *nodeK=tmp->next;
+    tmp->next=nodeK->next;
+    delete(nodeK);
+}
+//top
+int top(node *head){
+    if(head==NULL)return;
+    return head->data;
+}
+//bool
+bool empty(node *head){
+    return head==NULL;
 }
 int main(){
    freopen("input.txt","r",stdin);
