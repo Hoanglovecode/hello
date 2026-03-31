@@ -3,7 +3,7 @@
 #define MAX 100
 int n;
 double a[MAX];
-double eps=0.0000000001;
+double eps=0.000000001;
 void nhapdathuc() {
     printf("Nhap bac da thuc: ");
     scanf("%d",&n);
@@ -15,22 +15,22 @@ double hoocner(double x){
     for(int i=n-1;i>=0;i--)result=result*x+a[i];
     return result;
 }
-double Daoham(double x){
+double daoham(double x){
     double result=0;
     for(int i=1;i<=n;i++)result+=i*a[i]*pow(x,i-1);
     return result;
-}
+}   
 double newton(double x0){
     double x=x0;
     int cnt=0;
     do{
         double fx=hoocner(x);
-        double fpx=Daoham(x);
-        if(fpx==0){
+        double fdh=daoham(x);
+        if(fdh==0){
             printf("Dao ham bang 0\n");
             return x;
         }
-        double x1=x-fx/fpx;
+        double x1=x-fx/fdh;
         if(fabs(x1-x)<eps)
             return x1;
         x=x1;
@@ -69,23 +69,27 @@ double daycung(double x0,double x1){
     }while(cnt<1000);
     return x2;
 }
+double g(double x){
+    double lambda=0.1;
+    return x-lambda*hoocner(x);
+}
 double lap(double x0){
-    double x1;
-    int cnt=0;
-    do{
-        x1=x0-hoocner(x0); 
-        if(fabs(x1-x0)<eps)return x1;
-        x0=x1;
-        cnt++;
-    }while(cnt<1000);
-    return x1;
+    double x=x0,y;
+    int i=0;
+    while(i<1000){
+        y=x;
+        x=g(y);
+        if(fabs(x-y)<eps)return x;
+        i++;
+    }
+    return x;
 }
 int main(){
     nhapdathuc();
     int choice=1;
     while(choice!=0){
         printf("\n===== MENU =====\n");
-        printf("1.Tinh gia tri da thuc (Hoocner)\n");
+        printf("1.Tinh gia tri da thuc (PP Hoocner)\n");
         printf("2.Newton\n");
         printf("3.Chia doi\n");
         printf("4.Day cung\n");
@@ -97,7 +101,7 @@ int main(){
             double x;
             printf("Nhap x: ");
             scanf("%lf",&x);
-            printf("-------------------------------Gia tri da thuc = %lf\n",hoocner(x));
+            printf("-------------------------------Gia tri da thuc bang hoocner = %lf\n",hoocner(x));
         }
         else if(choice==2){
             double x0;

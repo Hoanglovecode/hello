@@ -1,3 +1,5 @@
 #include <stdio.h>
 #include <math.h>
-void nhapdathuc()
+void nhapdathuc(){
+    printf("Nhap bac da thuc:")
+}
