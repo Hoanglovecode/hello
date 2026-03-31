@@ -1,18 +1,1 @@
-4
-badminton
-102250068
-A
-3.89
-football
-102250069
-B
-3.36
-volleyball
-102250070
-C
-3.67
-basketball
-102250071
-D
-3.24
 

@@ -70,6 +70,21 @@ void insert(node *&head,int x,int k){
     nodeC->pre=tmp->pre;
     tmp->pre=nodeC;
 }
+//popfront
+void popfront(node *&head,int x){
+    if(head==NULL)return;
+    node *tmp=head;
+    head=head->next;
+    if(head!=NULL){
+        head->pre=NULL;
+    }
+    delete(tmp);
+}
+//popback
+//popmiddle
+//delete node have value=x
+//Find max value node
+//FInd min value node
 int main(){
    freopen("output.txt","w",stdout); 
 }

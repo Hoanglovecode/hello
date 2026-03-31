@@ -2,10 +2,10 @@
 using namespace std;
 struct node{
     int data;
-    node *next;
+    struct node *next;
 };
 typedef struct node node;
-//makenewnote
+//makenewnode
 node *makenewnode(int x){
     node *newnode=new node;
     newnode->data=x;
@@ -20,13 +20,15 @@ void review(node *head){
         head=head->next;
     }
 }
-//count
-int count(node *head){
+//size
+int size(node *head){
     int dem=0;
+    if(head==NULL)return;
     while(head!=NULL){
         dem++;
         head=head->next;
     }
+    return dem;
 }
 //pushfront
 void pushfront(node *&head,int x){
@@ -47,14 +49,16 @@ void pushback(node *&head,int x){
     tmp->next=nodeB;
 }
 //insert
-void insert(node*&head,int x,int k){
+void insert(node *&head,int x,int k){
+    int n=size(head);
     node *nodeC=makenewnode(x);
-    int n=count(head);
-    if(k<1 || k>n+1){
-        cout<<"Invalid insert"<<endl;return;
+    if(k<1||k>n+1){
+        cout<<"ERROR"<<endl;
+        return;
     }
     if(k==1){
-        pushfront(head,x);return;
+        pushfront(head,x);
+        return;
     }
     node *tmp=head;
     for(int i=1;i<k-1;i++){
@@ -71,12 +75,13 @@ void popfront(node *&head){
     delete(tmp);
 }
 //popback
-void popback(node*&head){
+void popback(node *&head){
     if(head==NULL)return;
-    node*tmp=head;
+    node *tmp=head;
     if(tmp->next==NULL){
         delete tmp;
-        head=NULL;return;
+        head=NULL;
+        return;
     }
     while(tmp->next->next!=NULL){
         tmp=tmp->next;
@@ -87,31 +92,29 @@ void popback(node*&head){
 }
 //popmiddle
 void popmiddle(node *&head,int k){
-    if(head==NULL)return;
-    node *tmp=head;
-    int n=count(head);
+    int n=size(head);
     if(k<1||k>n){
         cout<<"ERROR"<<endl;
+        return;
     }
     if(k==1){
-        popfront(head);return;
+        popfront(head);
+        return;
     }
+    node *tmp=head;
     for(int i=1;i<k-1;i++){
         tmp=tmp->next;
     }
-    node *nodeK=tmp->next;
-    tmp->next=nodeK->next;
-    delete(nodeK);
+    node* nodek=tmp->next;
+    tmp->next=nodek->next;
+    delete(nodek);
 }
-//top
-int top(node *head){
-    if(head==NULL)return;
-    return head->data;
+//cycle
+void reverse(node *head){
+    
 }
-//bool
-bool empty(node *head){
-    return head==NULL;
-}
+//reverse
+//mergesort
 int main(){
    freopen("input.txt","r",stdin);
    freopen("output.txt","w",stdout);

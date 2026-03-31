@@ -70,7 +70,6 @@ void pushback2(node *&head,int x){
 }
 //How to insert
 void insert(node *&head,int k,int x){
-    node *newnode=makenewnode(x);
     int n=count(head);
     if(k<1||k>n+1){
         cout<<"Invalid Insert!"<<endl;
@@ -80,6 +79,7 @@ void insert(node *&head,int k,int x){
         pushfront2(head,x);
         return;
     }
+    node *newnode=makenewnode(x);
     node*tmp=head;
     for(int i=1;i<=k-2;i++){
         tmp=tmp->next;
@@ -136,14 +136,27 @@ void popmiddle(node *& head,int k){
     tmp->next=nodek->next;
     delete nodek;
 }
+
 int top(node *head){
-    if(head!=NULL){
-        return head->data;
+    if(head==NULL){
+        cout<<"List empty\n";
+        return -1;
     }
-    return 0;
+    return head->data;
 }
 bool empty(node *head){
     return head==NULL;
+}
+void reverse(node *&head){
+    node*pre=NULL;
+    node*cur=head;
+    while(cur){
+        node *tmp=cur->next;
+        cur->next=pre;
+        pre=cur;
+        cur=tmp;
+    }
+    head=pre;
 }
 int main(){
     node *head=NULL;
@@ -158,7 +171,8 @@ int main(){
         cout<<"7.PopMiddle Node\n";
         cout<<"8.Popback Node\n";
         cout<<"9.Print First Value Node\n";
-        cout<<"10.Enter '0' if you want to stop\n";
+        cout<<"10.Reverse Node\n";
+        cout<<"11.Enter '0' if you want to stop\n";
         cout<<"--------------------------------------------------------\n";
         int n;
         cout<<"Enter option: ";cin>>n;
@@ -197,6 +211,11 @@ int main(){
         }
         else if(n==9){
             cout<<top(head)<<endl;
+        }
+        else if(n==10){
+            reverse(head);
+            duyet(head);
+            cout<<endl;
         }
         else{
             cout<<"Please enter again your option: ";

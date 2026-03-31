@@ -1,4 +1,13 @@
-basketball 102250071 D 3.24
-football 102250069 B 3.36
-volleyball 102250070 C 3.67
-badminton 102250068 A 3.89
+hoang 3.88
+trung 3.65
+Khanh 3.74
+anh 3.48
+bao 3.48
+gin 3.88
+
+anh 3.48
+bao 3.48
+trung 3.65
+Khanh 3.74
+gin 3.88
+hoang 3.88
