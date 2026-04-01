@@ -94,5 +94,6 @@
     "python-envs.defaultEnvManager": "ms-python.python:system",
     "python-envs.pythonProjects": [],
     "material-icon-theme.activeIconPack": "angular",
-    "material-icon-theme.enableLogging": false
+    "material-icon-theme.enableLogging": false,
+    "C_Cpp.errorSquiggles": "disabled"
 }
