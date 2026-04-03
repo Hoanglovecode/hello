@@ -51,8 +51,7 @@ void tryy3(int start,int sum){
       if(sum==S){
          for(int x:v){
             cout<<x<<' ';
-         }
-         cout<<endl;
+         } 
       }
       else if(sum<S){
          tryy3(j+1,sum);
