@@ -15,8 +15,8 @@ void sinh(){
 }
 int main(){
    freopen("input.txt","r",stdin);
-   freopen("output.txt","w",stdout);
    cin>>n>>k;
+   freopen("output.txt","w",stdout);
    ok=1;
    while(ok){
         for(int i=1;i<=k;i++){
