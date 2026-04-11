@@ -1,3 +1,4 @@
+
 #include <bits/stdc++.h>
 using namespace std;
 int n=9,x[100],cnt[4],dem=0;
