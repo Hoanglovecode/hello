@@ -1,173 +1,118 @@
 #include <bits/stdc++.h>
 using namespace std;
-
-struct Node {
-    string maHang, tenHang;
-    int soLuong;
-    double donGia;
+struct Node{
+    string mahang,tenhang;
+    int soluong;
+    double dongia;
     Node* next;
-    Node* prev;
+    Node* pre;
 };
-typedef Node* node;
-
-// ================== 1. Khởi tạo ==================
-node khoiTao() {
-    node header = new Node;
-    header->next = header;
-    header->prev = header;
+typedef struct Node* node;
+node khoitao(){
+    node header=new Node;
+    header->next=header;
+    header->pre=header;
     return header;
 }
-
-// ================== Tạo node ==================
-node taoNode(string maHang, string tenHang, int soLuong, double donGia) {
-    node newNode = new Node;
-    newNode->maHang = maHang;
-    newNode->tenHang = tenHang;
-    newNode->soLuong = soLuong;
-    newNode->donGia = donGia;
-    newNode->next = nullptr;
-    newNode->prev = nullptr;
-    return newNode;
+node createnode(string mahang,string tenhang,int soluong,double dongia){
+    node newnode=new Node;
+    newnode->mahang=mahang;
+    newnode->tenhang=tenhang;
+    newnode->soluong=soluong;
+    newnode->dongia=dongia;
+    newnode->next=nullptr;
+    newnode->pre=nullptr;
+    return newnode;
 }
-
-// ================== 2. Thêm cuối ==================
-void pushback(node header, string maHang, string tenHang, int soLuong, double donGia) {
-    node nodeB = taoNode(maHang, tenHang, soLuong, donGia);
-
-    node tmp = header;
-
-    // tìm node cuối
-    while (tmp->next != header) {
-        tmp = tmp->next;
+void pushback(node header,string mahang,string tenhang,int soluong,double dongia){
+    node nodeB=createnode(mahang,tenhang,soluong,dongia);
+    node tmp=header;
+    while(tmp->next!=header){
+        tmp=tmp->next;
     }
-
-    tmp->next = nodeB;
-    nodeB->prev = tmp;
-
-    nodeB->next = header;
-    header->prev = nodeB;
+    tmp->next=nodeB;
+    nodeB->pre=tmp;
+    nodeB->next=header;
+    header->pre=nodeB;
 }
-
-// ================== Hàm nhập ==================
-void nhapDanhSach(node header) {
-    int n;
-    cout << "Nhap so mat hang: ";
-    cin >> n;
-    cin.ignore();
-
-    for (int i = 1; i <= n; i++) {
-        string maHang, tenHang;
-        int soLuong;
-        double donGia;
-
-        cout << "\nMat hang " << i << ":\n";
-        cout << "Ma hang: ";
-        getline(cin, maHang);
-
-        cout << "Ten hang: ";
-        getline(cin, tenHang);
-
-        cout << "So luong: ";
-        cin >> soLuong;
-
-        cout << "Don gia: ";
-        cin >> donGia;
-        cin.ignore();
-
-        pushback(header, maHang, tenHang, soLuong, donGia);
-    }
-}
-
-// ================== 3. Xóa theo mã ==================
-void xoaTheoMa(node header, string ma) {
-    node cur = header->next;
-
-    while (cur != header) {
-        if (cur->maHang == ma) {
-            node tmp = cur;
-
-            cur->prev->next = cur->next;
-            cur->next->prev = cur->prev;
-
-            cur = cur->next;
-            delete tmp;
-        } else {
-            cur = cur->next;
+void xoahang(node header,string s){
+    node tmp=header->next;
+    while(tmp!=header){
+        if(tmp->mahang==s){
+            node del=tmp;
+            tmp->pre->next=tmp->next;
+            tmp->next->pre=tmp->pre;
+            tmp=tmp->next;
+            delete(del);
         }
+        else tmp=tmp->next;
     }
 }
-
-// ================== 4. In từ đầu ==================
-void inTuDau(node header) {
-    node cur = header->next;
-
-    if (cur == header) {
-        cout << "Danh sach rong!\n";
+void nhapdanhsach(node header){
+    int n;
+    cout<<"Nhap so mat hang:";cin>>n;
+    cin.ignore();
+    for(int i=1;i<=n;i++){
+        string ma,ten;
+        int soluong;
+        double dongia;
+        cout<<"Nhap ma hang:";getline(cin,ma);
+        cout<<"Nhap ten hang:";getline(cin,ten);
+        cout<<"Nhap so luong:";cin>>soluong;
+        cout<<"Nhap don gia:";cin>>dongia;
+        cin.ignore();
+        pushback(header,ma,ten,soluong,dongia);
+    }
+}
+void indau(node header){
+    node tmp=header->next;
+    if(tmp==header){
+        cout<<"Danh sach rong"<<endl;
         return;
     }
-
-    while (cur != header) {
-        cout << cur->maHang << " | "
-             << cur->tenHang << " | "
-             << cur->soLuong << " | "
-             << cur->donGia << endl;
-        cur = cur->next;
+    while(tmp!=header){
+        cout<<tmp->mahang<<"|"
+            <<tmp->tenhang<<"|"
+            <<tmp->soluong<<"|"
+            <<tmp->dongia<<endl;
+        tmp=tmp->next;
     }
 }
-
-// ================== 5. In từ cuối ==================
-void inTuCuoi(node header) {
-    node cur = header->prev;
-
-    if (cur == header) {
-        cout << "Danh sach rong!\n";
+void incuoi(node header){
+    node tmp=header->pre;
+    if(tmp==header){
+        cout<<"Danh sach rong"<<endl;
         return;
     }
-
-    while (cur != header) {
-        cout << cur->maHang << " | "
-             << cur->tenHang << " | "
-             << cur->soLuong << " | "
-             << cur->donGia << endl;
-        cur = cur->prev;
+    while(tmp!=header){
+        cout<<tmp->mahang<<"|"
+            <<tmp->tenhang<<"|"
+            <<tmp->soluong<<"|"
+            <<tmp->dongia<<endl;
+        tmp=tmp->pre;
     }
 }
-
-// ================== 6. Tổng tiền ==================
-double tinhTongTien(node header) {
-    node cur = header->next;
-    double tong = 0;
-
-    while (cur != header) {
-        tong += cur->soLuong * cur->donGia;
-        cur = cur->next;
+double tongtien(node header){
+    node tmp=header->next;
+    double tong=0;
+    while(tmp!=header){
+        tong+=(tmp->soluong*tmp->dongia);
+        tmp=tmp->next;
     }
-
     return tong;
 }
-
-// ================== MAIN ==================
-int main() {
-    node header = khoiTao();
-
-    nhapDanhSach(header);
-
-    cout << "\nDanh sach tu dau:\n";
-    inTuDau(header);
-
-    cout << "\nDanh sach tu cuoi:\n";
-    inTuCuoi(header);
-
-    cout << "\nTong tien: " << tinhTongTien(header) << endl;
-
+int main(){
+    node header=khoitao();
+    nhapdanhsach(header);
+    cout<<"Danh sach in tu dau:"<<endl;
+    indau(header);
+    cout<<"Danh sach in tu cuoi:"<<endl;
+    incuoi(header);
+    cout<<"Tong thanh tien:"<<tongtien(header)<<endl;
     string ma;
-    cout << "\nNhap ma can xoa: ";
-    getline(cin, ma);
-
-    xoaTheoMa(header, ma);
-
-    cout << "\nSau khi xoa:\n";
-    inTuDau(header);
-
-    return 0;
+    cout<<"Nhap ma can xoa:";
+    getline(cin,ma);
+    xoahang(header,ma);
+    cout<<"Danh sach sau khi xoa:"<<endl;
+    indau(header);
 }
