@@ -1,122 +1,118 @@
 #include <bits/stdc++.h>
 using namespace std;
-struct node{
-    int data;
-    struct node *next;
+struct Node{
+    string mahang,tenhang;
+    int soluong;
+    double dongia;
+    Node* next;
+    Node* pre;
 };
-typedef struct node node;
-//makenewnode
-node *makenewnode(int x){
-    node *newnode=new node;
-    newnode->data=x;
-    newnode->next=NULL;
+typedef struct Node* node;
+node khoitao(){
+    node header=new Node;
+    header->next=header;
+    header->pre=header;
+    return header;
+}
+node createnode(string mahang,string tenhang,int soluong,double dongia){
+    node newnode=new Node;
+    newnode->mahang=mahang;
+    newnode->tenhang=tenhang;
+    newnode->soluong=soluong;
+    newnode->dongia=dongia;
+    newnode->next=nullptr;
+    newnode->pre=nullptr;
     return newnode;
 }
-//review
-void review(node *head){
-    if(head==NULL)return;
-    while(head!=NULL){
-        cout<<head->data<<' ';
-        head=head->next;
-    }
-}
-//size
-int size(node *head){
-    int dem=0;
-    if(head==NULL)return;
-    while(head!=NULL){
-        dem++;
-        head=head->next;
-    }
-    return dem;
-}
-//pushfront
-void pushfront(node *&head,int x){
-    node *nodeA=makenewnode(x);
-    nodeA->next=head;
-    head=nodeA;
-}
-//pushback
-void pushback(node *&head,int x){
-    node *nodeB=makenewnode(x);
-    if(head==NULL){
-        head=nodeB;return;
-    }
-    node *tmp=head;
-    while(tmp->next!=NULL){
+void pushback(node header,string mahang,string tenhang,int soluong,double dongia){
+    node nodeB=createnode(mahang,tenhang,soluong,dongia);
+    node tmp=header;
+    while(tmp->next!=header){
         tmp=tmp->next;
     }
     tmp->next=nodeB;
+    nodeB->pre=tmp;
+    nodeB->next=header;
+    header->pre=nodeB;
 }
-//insert
-void insert(node *&head,int x,int k){
-    int n=size(head);
-    node *nodeC=makenewnode(x);
-    if(k<1||k>n+1){
-        cout<<"ERROR"<<endl;
+void xoahang(node header,string s){
+    node tmp=header->next;
+    while(tmp!=header){
+        if(tmp->mahang==s){
+            node del=tmp;
+            tmp->pre->next=tmp->next;
+            tmp->next->pre=tmp->pre;
+            tmp=tmp->next;
+            delete(del);
+        }
+        else tmp=tmp->next;
+    }
+}
+void nhapdanhsach(node header){
+    int n;
+    cout<<"Nhap so mat hang:";cin>>n;
+    cin.ignore();
+    for(int i=1;i<=n;i++){
+        string ma,ten;
+        int soluong;
+        double dongia;
+        cout<<"Nhap ma hang:";getline(cin,ma);
+        cout<<"Nhap ten hang:";getline(cin,ten);
+        cout<<"Nhap so luong:";cin>>soluong;
+        cout<<"Nhap don gia:";cin>>dongia;
+        cin.ignore();
+        pushback(header,ma,ten,soluong,dongia);
+    }
+}
+void indau(node header){
+    node tmp=header->next;
+    if(tmp==header){
+        cout<<"Danh sach rong"<<endl;
         return;
     }
-    if(k==1){
-        pushfront(head,x);
-        return;
-    }
-    node *tmp=head;
-    for(int i=1;i<k-1;i++){
+    while(tmp!=header){
+        cout<<tmp->mahang<<"|"
+            <<tmp->tenhang<<"|"
+            <<tmp->soluong<<"|"
+            <<tmp->dongia<<endl;
         tmp=tmp->next;
     }
-    nodeC->next=tmp->next;
-    tmp->next=nodeC;
 }
-//popfront
-void popfront(node *&head){
-    if(head==NULL)return;
-    node *tmp=head;
-    head=tmp->next;
-    delete(tmp);
-}
-//popback
-void popback(node *&head){
-    if(head==NULL)return;
-    node *tmp=head;
-    if(tmp->next==NULL){
-        delete tmp;
-        head=NULL;
+void incuoi(node header){
+    node tmp=header->pre;
+    if(tmp==header){
+        cout<<"Danh sach rong"<<endl;
         return;
     }
-    while(tmp->next->next!=NULL){
+    while(tmp!=header){
+        cout<<tmp->mahang<<"|"
+            <<tmp->tenhang<<"|"
+            <<tmp->soluong<<"|"
+            <<tmp->dongia<<endl;
+        tmp=tmp->pre;
+    }
+}
+double tongtien(node header){
+    node tmp=header->next;
+    double tong=0;
+    while(tmp!=header){
+        tong+=(tmp->soluong*tmp->dongia);
         tmp=tmp->next;
     }
-    node *last=tmp->next;
-    tmp->next=NULL;
-    delete(last);
+    return tong;
 }
-//popmiddle
-void popmiddle(node *&head,int k){
-    int n=size(head);
-    if(k<1||k>n){
-        cout<<"ERROR"<<endl;
-        return;
-    }
-    if(k==1){
-        popfront(head);
-        return;
-    }
-    node *tmp=head;
-    for(int i=1;i<k-1;i++){
-        tmp=tmp->next;
-    }
-    node* nodek=tmp->next;
-    tmp->next=nodek->next;
-    delete(nodek);
-}
-//cycle
-void reverse(node *head){
-    
-}
-//reverse
-//mergesort
 int main(){
-   freopen("input.txt","r",stdin);
-   freopen("output.txt","w",stdout);
-   
+    node header=khoitao();
+    nhapdanhsach(header);
+    cout<<"Danh sach in tu dau:"<<endl;
+    indau(header);
+    cout<<"Danh sach in tu cuoi:"<<endl;
+    incuoi(header);
+    cout<<"Tong thanh tien:"<<tongtien(header)<<endl;
+    string ma;
+    cout<<"Nhap ma can xoa:";
+    getline(cin,ma);
+    xoahang(header,ma);
+    cout<<"Danh sach sau khi xoa:"<<endl;
+    indau(header);
 }
