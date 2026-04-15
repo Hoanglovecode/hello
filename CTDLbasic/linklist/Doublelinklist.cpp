@@ -17,7 +17,7 @@ node *makenewnode(int x){
 //count
 int count(node *head){
     int dem=0;
-    while(head->next!=NULL){
+    while(head){
         dem++;
         head=head->next;
     }
