@@ -2,8 +2,8 @@
 using namespace std;
 struct Node{
     int data;
-    Node *l;
-    Node *r;
+    Node* l;
+    Node* r;
 };
 typedef struct Node* node;
 node createnode(int x){
@@ -12,14 +12,6 @@ node createnode(int x){
     p->l=nullptr;
     p->r=nullptr;
     return p;
-}
-//inorder
-void inorder(node root){
-    if(root){
-        inorder(root->l);
-        cout<<root->data<<' ';
-        inorder(root->r);
-    }
 }
 void insert(node &root,int x){
     if(root==nullptr){
@@ -41,16 +33,16 @@ int findmax(node root){
     }
     return root->data;
 }
-node deletenode(node root,int x){
+node deletenode(node &root,int k){
     if(root==nullptr)return nullptr;
-    if(x<root->data){
-        root->l=deletenode(root->l,x);
+    if(k<root->data){
+        root->l=deletenode(root->l,k);
     }
-    else if(x>root->data){
-        root->r=deletenode(root->r,x);
+    else if(k>root->data){
+        root->r=deletenode(root->r,k);
     }
     else{
-        if(!root->l&&!root->r){
+        if(root->r==nullptr && root->l==nullptr){
             delete root;
             return nullptr;
         }
@@ -66,7 +58,7 @@ node deletenode(node root,int x){
         }
         else{
             node tmp=root->r;
-            while(root->l){
+            while(tmp){
                 tmp=tmp->l;
             }
             root->data=tmp->data;
@@ -75,5 +67,39 @@ node deletenode(node root,int x){
     }
     return root;
 }
-int main(){   
+void inorder(node root){
+    if(root){
+        inorder(root->l);
+        cout<<root->data<<' ';
+        inorder(root->r);
+    }
+}
+node pred(node root,int x){
+    node pre=nullptr;
+    while(root){
+        if(x>root->data){
+            pre=root;
+            root=root->r;
+        }
+        else{
+            root=root->l;
+        }
+    }
+    return pre;
+}
+node succ(node root,int x){
+    node succ=nullptr;
+    while(root){
+        if(x<root->data){
+            succ=root;
+            root=root->l;
+        }
+        else{
+            root=root->r;
+        }
+    }
+    return succ;
+}
+int main(){
+   
 }

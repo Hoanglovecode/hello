@@ -67,7 +67,7 @@ node deleteNode(node root,int k){
     }
     return root;
 }
-//print current root giống preorder
+//in theo tầng(level order)
 void printArrayTree(node root){
     if(root==nullptr)return;
     queue<node>q;
@@ -107,6 +107,37 @@ void postorder(node root){
         cout<<root->data<<' ';
     }
 }
+// Tìm predecessor của x
+node predecessor(node root, int x){
+    node pred = nullptr;
+
+    while(root){
+        if(x > root->data){
+            pred = root;       // ứng viên predecessor
+            root = root->r;
+        }
+        else{
+            root = root->l;
+        }
+    }
+    return pred;
+}
+
+// Tìm successor của x
+node successor(node root, int x){
+    node succ = nullptr;
+
+    while(root){
+        if(x < root->data){
+            succ = root;       // ứng viên successor
+            root = root->l;
+        }
+        else{
+            root = root->r;
+        }
+    }
+    return succ;
+}
 int main(){
    int a[]={46,90,60,70,23,40,61,80};
    node root=nullptr;
@@ -125,4 +156,21 @@ int main(){
    cout<<"\nPreorder Tree:";preorder(root);
    cout<<"\nPostorder Tree:";postorder(root);
    return 0;
+   cout<<"\nPostorder Tree:";postorder(root);
+   int key;
+   cout << "\n\nNhap gia tri can tim predecessor va successor: ";
+   cin >> key;
+
+   node pred = predecessor(root, key);
+   node succ = successor(root, key);
+
+    if(pred)
+        cout << "Predecessor of " << key << " = " << pred->data << endl;
+    else
+        cout << "Predecessor of " << key << " does not exist!" << endl;
+
+    if(succ)
+        cout << "Successor of " << key << " = " << succ->data << endl;
+    else
+        cout << "Successor of " << key << " does not exist!" << endl;
 }
