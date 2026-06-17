@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mô phỏng Thuật toán Quay lui - N-Queens</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .chess-board { display: grid; gap: 2px; background-color: #475569; border: 4px solid #1e293b; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); margin: 0 auto; }
+        .cell { aspect-ratio: 1 / 1; display: flex; align-items: center; justify-content: center; font-size: 2rem; transition: all 0.2s ease; }
+        .cell.light { background-color: #f1f5f9; }
+        .cell.dark { background-color: #cbd5e1; }
+        .cell.trying { background-color: #fde047; }
+        .cell.invalid { background-color: #fca5a5; }
+        .cell.valid { background-color: #86efac; }
+        .queen { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes pop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+        .log-container { max-height: 250px; overflow-y: auto; scrollbar-width: thin; }
+        .code-tab.active { border-bottom: 2px solid #4f46e5; color: #4f46e5; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-6xl mx-auto">
+        <header class="mb-8 text-center">
+            <h1 class="text-3xl font-bold text-slate-800 mb-2">Mô phỏng Thuật toán Quay lui (N-Queens)</h1>
+            <p class="text-slate-600 italic">Đặt N quân hậu sao cho không quân nào ăn được quân nào.</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <h2 class="text-xl font-semibold mb-4 text-slate-700 border-b pb-2">Điều khiển</h2>
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600 mb-2">Kích thước (N): <span id="n-val">8</span></label>
+                        <input type="range" id="n-size" min="4" max="10" value="8" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600 mb-2">Tốc độ</label>
+                        <select id="speed" class="w-full p-2 border border-slate-300 rounded-lg outline-none">
+                            <option value="800">Chậm</option>
+                            <option value="400" selected>Bình thường</option>
+                            <option value="100">Nhanh</option>
+                        </select>
+                    </div>
+                    <button id="start-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg transition-colors">Bắt đầu</button>
+                    <button id="reset-btn" class="w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-3 rounded-lg transition-colors">Đặt lại</button>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2">
+                <div id="board" class="chess-board mb-6"></div>
+                <div class="bg-slate-900 text-indigo-300 p-4 rounded-xl font-mono text-xs shadow-inner">
+                    <div class="flex justify-between border-b border-slate-700 pb-1 mb-2">
+                        <span>NHẬT KÝ GIẢI THUẬT</span>
+                        <span id="step-count">Bước: 0</span>
+                    </div>
+                    <div id="log" class="log-container space-y-1 text-slate-300"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-12 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="bg-slate-50 border-b p-4 flex justify-between items-center">
+                <h2 class="font-bold text-slate-800">Mã nguồn tham khảo</h2>
+                <div class="flex space-x-4">
+                    <button onclick="switchTab('py')" id="tab-py" class="code-tab active font-bold px-2 py-1">Python</button>
+                    <button onclick="switchTab('cpp')" id="tab-cpp" class="code-tab font-bold px-2 py-1 text-slate-400">C++</button>
+                </div>
+            </div>
+            <div class="p-4 bg-slate-900 overflow-x-auto">
+                <pre id="code-py" class="text-indigo-200 text-sm"><code># Python Backtracking
+def solve(board, row, n):
+    if row >= n: return True
+    for col in range(n):
+        if is_safe(board, row, col):
+            board[row][col] = 1
+            if solve(board, row + 1, n): return True
+            board[row][col] = 0 # Backtrack
+    return False</code></pre>
+                <pre id="code-cpp" class="text-indigo-200 text-sm hidden"><code>// C++ Backtracking
+bool solve(vector&lt;vector&lt;int&gt;&gt;& b, int r, int n) {
+    if (r >= n) return true;
+    for (int c = 0; c < n; c++) {
+        if (isSafe(b, r, c)) {
+            b[r][c] = 1;
+            if (solve(b, r + 1, n)) return true;
+            b[r][c] = 0; // Backtrack
+        }
+    }
+    return false;
+}</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const boardEl = document.getElementById('board');
+        const nInput = document.getElementById('n-size');
+        const logEl = document.getElementById('log');
+        let N = 8;
+        let boardState = [];
+        let isRunning = false;
+        let stop = false;
+
+        function initBoard() {
+            N = parseInt(nInput.value);
+            document.getElementById('n-val').innerText = N;
+            boardEl.style.gridTemplateColumns = `repeat(${N}, 1fr)`;
+            boardEl.style.width = 'min(100%, 450px)';
+            boardEl.innerHTML = '';
+            boardState = Array(N).fill(0).map(() => Array(N).fill(0));
+            for (let r = 0; r < N; r++) {
+                for (let c = 0; c < N; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = `cell ${(r+c)%2===0?'light':'dark'}`;
+                    cell.id = `c-${r}-${c}`;
+                    boardEl.appendChild(cell);
+                }
+            }
+        }
+
+        const sleep = () => new Promise(res => setTimeout(res, document.getElementById('speed').value));
+
+        async function isSafe(row, col) {
+            for (let i = 0; i < row; i++) if (boardState[i][col]) return false;
+            for (let i=row, j=col; i>=0 && j>=0; i--, j--) if (boardState[i][j]) return false;
+            for (let i=row, j=col; i>=0 && j<N; i--, j++) if (boardState[i][j]) return false;
+            return true;
+        }
+
+        async function solve(row) {
+            if (stop || row >= N) return true;
+            for (let col = 0; col < N; col++) {
+                if (stop) return false;
+                const cell = document.getElementById(`c-${row}-${col}`);
+                cell.innerHTML = '<span class="queen">👑</span>';
+                cell.classList.add('trying');
+                await sleep();
+
+                if (await isSafe(row, col)) {
+                    cell.classList.replace('trying', 'valid');
+                    boardState[row][col] = 1;
+                    if (await solve(row + 1)) return true;
+                    boardState[row][col] = 0;
+                    cell.classList.remove('valid');
+                } else {
+                    cell.classList.replace('trying', 'invalid');
+                    await sleep();
+                    cell.classList.remove('invalid');
+                }
+                cell.innerHTML = '';
+            }
+            return false;
+        }
+
+        document.getElementById('start-btn').onclick = async () => {
+            if (isRunning) return;
+            isRunning = true; stop = false;
+            initBoard();
+            if (await solve(0)) {
+                alert("Đã tìm thấy lời giải!");
+            }
+            isRunning = false;
+        };
+
+        document.getElementById('reset-btn').onclick = () => {
+            stop = true; isRunning = false;
+            initBoard();
+        };
+
+        function switchTab(l) {
+            document.getElementById('code-py').classList.toggle('hidden', l !== 'py');
+            document.getElementById('code-cpp').classList.toggle('hidden', l !== 'cpp');
+            document.getElementById('tab-py').className = `code-tab ${l==='py'?'active':'text-slate-400'}`;
+            document.getElementById('tab-cpp').className = `code-tab ${l==='cpp'?'active':'text-slate-400'}`;
+        }
+
+        nInput.oninput = initBoard;
+        window.onload = initBoard;
+    </script>
+</body>
+</html>

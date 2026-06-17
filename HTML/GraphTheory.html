@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PBL1 - Bài Toán Đồ Thị</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#0a0a0f;
+  --bg2:#111118;
+  --card:#16161e;
+  --border:#2a2a3a;
+  --blue:#4f8ef7;
+  --purple:#8b5cf6;
+  --cyan:#22d3ee;
+  --green:#10b981;
+  --gold:#f59e0b;
+  --red:#ef4444;
+  --text:#f0f0f8;
+  --muted:#8888aa;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;overflow-x:hidden;}
+
+/* CANVAS BG */
+#canvas-bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;opacity:0.35;}
+
+/* LAYOUT */
+.container{max-width:1200px;margin:0 auto;padding:0 24px;position:relative;z-index:1;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;backdrop-filter:blur(20px);background:rgba(10,10,15,0.8);border-bottom:1px solid var(--border);}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;max-width:1200px;margin:0 auto;}
+.nav-logo{font-size:1.2rem;font-weight:800;background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-0.5px;}
+.nav-links{display:flex;gap:28px;}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:0.9rem;font-weight:500;transition:color 0.2s;}
+.nav-links a:hover{color:var(--text);}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:100px 24px 60px;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(79,142,247,0.1);border:1px solid rgba(79,142,247,0.3);border-radius:100px;padding:6px 16px;font-size:0.8rem;color:var(--blue);margin-bottom:28px;animation:fadeInDown 0.6s ease forwards;}
+.hero-badge .dot{width:6px;height:6px;background:var(--blue);border-radius:50%;animation:pulse 1.5s infinite;}
+.hero h1{font-size:clamp(2.5rem,6vw,5rem);font-weight:900;line-height:1.1;letter-spacing:-2px;margin-bottom:24px;animation:fadeInUp 0.7s 0.1s ease both;}
+.hero h1 .grad{background:linear-gradient(135deg,var(--blue) 0%,var(--purple) 50%,var(--cyan) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero p{font-size:1.15rem;color:var(--muted);max-width:580px;margin:0 auto 40px;line-height:1.7;animation:fadeInUp 0.7s 0.2s ease both;}
+.hero-cta{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;animation:fadeInUp 0.7s 0.3s ease both;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border-radius:12px;font-weight:600;font-size:0.95rem;cursor:pointer;text-decoration:none;transition:all 0.2s;}
+.btn-primary{background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;box-shadow:0 4px 24px rgba(79,142,247,0.35);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(79,142,247,0.45);}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text);}
+.btn-ghost:hover{background:var(--card);border-color:var(--blue);}
+.hero-stats{display:flex;gap:40px;justify-content:center;margin-top:60px;animation:fadeInUp 0.7s 0.4s ease both;}
+.stat{text-align:center;}
+.stat-num{font-size:2rem;font-weight:800;background:linear-gradient(135deg,var(--blue),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.stat-label{font-size:0.8rem;color:var(--muted);margin-top:4px;}
+
+/* SECTION */
+section{padding:100px 0;}
+.section-header{text-align:center;margin-bottom:64px;}
+.section-tag{display:inline-block;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.3);border-radius:100px;padding:5px 14px;font-size:0.8rem;color:var(--purple);margin-bottom:16px;}
+.section-title{font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:800;letter-spacing:-1px;margin-bottom:16px;}
+.section-sub{color:var(--muted);font-size:1rem;max-width:520px;margin:0 auto;}
+
+/* PROBLEMS GRID */
+.problems-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;}
+.prob-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px;position:relative;overflow:hidden;transition:all 0.3s;cursor:default;}
+.prob-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:20px 20px 0 0;}
+.prob-card:nth-child(1)::before{background:linear-gradient(90deg,var(--blue),var(--cyan));}
+.prob-card:nth-child(2)::before{background:linear-gradient(90deg,var(--purple),var(--blue));}
+.prob-card:nth-child(3)::before{background:linear-gradient(90deg,var(--cyan),var(--green));}
+.prob-card:nth-child(4)::before{background:linear-gradient(90deg,var(--gold),var(--red));}
+.prob-card:hover{transform:translateY(-6px);border-color:rgba(79,142,247,0.4);box-shadow:0 16px 48px rgba(79,142,247,0.1);}
+.prob-num{font-size:0.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.prob-title{font-size:1.2rem;font-weight:700;margin-bottom:12px;letter-spacing:-0.3px;}
+.prob-desc{color:var(--muted);font-size:0.9rem;line-height:1.6;margin-bottom:20px;}
+.prob-tags{display:flex;flex-wrap:wrap;gap:8px;}
+.tag{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:0.75rem;color:var(--muted);}
+.tag.blue{background:rgba(79,142,247,0.1);border-color:rgba(79,142,247,0.3);color:var(--blue);}
+.tag.purple{background:rgba(139,92,246,0.1);border-color:rgba(139,92,246,0.3);color:var(--purple);}
+.tag.cyan{background:rgba(34,211,238,0.1);border-color:rgba(34,211,238,0.3);color:var(--cyan);}
+.tag.green{background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.3);color:var(--green);}
+.tag.gold{background:rgba(245,158,11,0.1);border-color:rgba(245,158,11,0.3);color:var(--gold);}
+
+/* ALGORITHMS */
+.algo-row{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:32px;}
+@media(max-width:768px){.algo-row{grid-template-columns:1fr;}}
+.algo-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px;transition:all 0.3s;}
+.algo-card:hover{border-color:rgba(79,142,247,0.3);transform:translateY(-3px);}
+.algo-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:20px;}
+.algo-card h3{font-size:1.15rem;font-weight:700;margin-bottom:10px;}
+.algo-card p{color:var(--muted);font-size:0.9rem;line-height:1.6;margin-bottom:20px;}
+.algo-steps{list-style:none;display:flex;flex-direction:column;gap:8px;}
+.algo-steps li{display:flex;gap:12px;font-size:0.85rem;color:var(--muted);}
+.algo-steps li .step-n{min-width:22px;height:22px;background:rgba(79,142,247,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;color:var(--blue);}
+
+/* COMPLEXITY TABLE */
+.complexity-section{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:40px;overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th{padding:14px 20px;text-align:left;font-size:0.8rem;letter-spacing:1px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);}
+td{padding:14px 20px;font-size:0.9rem;border-bottom:1px solid rgba(255,255,255,0.04);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(255,255,255,0.02);}
+.complexity{font-family:'Courier New',monospace;font-size:0.85rem;padding:3px 8px;background:rgba(79,142,247,0.1);border-radius:6px;color:var(--blue);}
+
+/* DEMO VISUALIZER */
+.demo-section{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:40px;}
+.demo-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:gap;}
+.demo-header h2{font-size:1.4rem;font-weight:700;}
+.demo-controls{display:flex;gap:12px;flex-wrap:wrap;}
+.ctrl-btn{padding:8px 18px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text);font-size:0.85rem;cursor:pointer;transition:all 0.2s;}
+.ctrl-btn:hover,.ctrl-btn.active{background:var(--blue);border-color:var(--blue);color:#fff;}
+.canvas-wrap{position:relative;border-radius:14px;overflow:hidden;background:#0d0d14;border:1px solid var(--border);}
+canvas#graph-canvas{display:block;width:100%;height:360px;}
+.canvas-info{position:absolute;bottom:16px;left:16px;right:16px;display:flex;gap:12px;flex-wrap:wrap;}
+.info-pill{background:rgba(0,0,0,0.7);backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:0.78rem;color:var(--muted);}
+.info-pill span{color:var(--text);font-weight:600;}
+
+/* CODE DISPLAY */
+.code-section{margin-top:32px;}
+.code-tabs{display:flex;gap:4px;background:rgba(0,0,0,0.3);border-radius:12px;padding:4px;width:fit-content;margin-bottom:16px;}
+.code-tab{padding:8px 18px;border-radius:9px;font-size:0.85rem;cursor:pointer;color:var(--muted);transition:all 0.2s;}
+.code-tab.active{background:var(--card);color:var(--text);font-weight:600;}
+.code-block{background:#0d0d14;border:1px solid var(--border);border-radius:14px;padding:24px;overflow-x:auto;display:none;}
+.code-block.active{display:block;}
+pre{font-family:'Fira Code','Courier New',monospace;font-size:0.82rem;line-height:1.7;color:#c9d1d9;}
+.kw{color:#ff7b72;} .fn{color:#d2a8ff;} .str{color:#a5d6ff;} .cm{color:#8b949e;font-style:italic;} .num{color:#79c0ff;} .type{color:#f0b429;}
+
+/* TEAM */
+.team-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;}
+.team-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px;text-align:center;transition:all 0.3s;}
+.team-card:hover{transform:translateY(-4px);border-color:rgba(139,92,246,0.3);}
+.avatar{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:800;}
+.team-card h3{font-size:1.1rem;font-weight:700;margin-bottom:6px;}
+.team-card p{color:var(--muted);font-size:0.85rem;}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:40px 0;text-align:center;color:var(--muted);font-size:0.85rem;}
+footer strong{color:var(--text);}
+
+/* ANIMATIONS */
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+/* SCROLL REVEAL */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity 0.6s ease,transform 0.6s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+/* GLOW */
+.glow-dot{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;}
+
+/* RESPONSIVE */
+@media(max-width:600px){
+  .hero-stats{gap:24px;}
+  .nav-links{display:none;}
+  .algo-row{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<canvas id="canvas-bg"></canvas>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">PBL1 ∙ Graph Theory</div>
+    <div class="nav-links">
+      <a href="#problems">Đề Tài</a>
+      <a href="#algorithms">Thuật Toán</a>
+      <a href="#demo">Demo</a>
+      <a href="#code">Code</a>
+      <a href="#team">Nhóm</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      Project-Based Learning 1 · HUTECH 2024
+    </div>
+    <h1>Bài Toán<br><span class="grad">Lý Thuyết Đồ Thị</span></h1>
+    <p>Triển khai các thuật toán đồ thị quan trọng: Euler, Dijkstra, Prim, Kruskal, BFS, DFS bằng ngôn ngữ C.</p>
+    <div class="hero-cta">
+      <a href="#demo" class="btn btn-primary">▶ Xem Demo</a>
+      <a href="#code" class="btn btn-ghost">{ } Xem Code</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">4</div><div class="stat-label">Đề Tài</div></div>
+      <div class="stat"><div class="stat-num">6</div><div class="stat-label">Thuật Toán</div></div>
+      <div class="stat"><div class="stat-num">40</div><div class="stat-label">Test Cases</div></div>
+      <div class="stat"><div class="stat-num">C</div><div class="stat-label">Ngôn Ngữ</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEMS -->
+<section id="problems">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-tag">Đề Tài</div>
+      <h2 class="section-title">4 Bài Toán Đồ Thị</h2>
+      <p class="section-sub">Từ kiểm tra tính chất Euler đến tìm cây phủ nhỏ nhất với nhiều thuật toán khác nhau.</p>
+    </div>
+    <div class="problems-grid">
+      <div class="prob-card reveal">
+        <div class="prob-num">Đề 806</div>
+        <div class="prob-title">Bài Toán Trên Đồ Thị</div>
+        <div class="prob-desc">Phát sinh ngẫu nhiên đồ thị vô hướng liên thông. Kiểm tra Euler, tìm đường ngắn nhất Dijkstra, cây phủ Prim.</div>
+        <div class="prob-tags">
+          <span class="tag blue">Euler</span>
+          <span class="tag blue">Dijkstra</span>
+          <span class="tag blue">Prim</span>
+          <span class="tag">Random Graph</span>
+        </div>
+      </div>
+      <div class="prob-card reveal">
+        <div class="prob-num">Đề 807</div>
+        <div class="prob-title">Cây Phủ BFS</div>
+        <div class="prob-desc">Khái niệm cây, cây phủ, định lý tương đương. Thiết kế và cài đặt thuật toán tìm cây phủ theo chiều ngang (BFS).</div>
+        <div class="prob-tags">
+          <span class="tag purple">BFS</span>
+          <span class="tag purple">Spanning Tree</span>
+          <span class="tag">Queue</span>
+          <span class="tag">10 Tests</span>
+        </div>
+      </div>
+      <div class="prob-card reveal">
+        <div class="prob-num">Đề 808</div>
+        <div class="prob-title">Cây Phủ DFS + Prim</div>
+        <div class="prob-desc">Thuật toán tìm cây phủ theo chiều sâu (DFS) và thuật toán Prim tìm cây phủ nhỏ nhất với Greedy approach.</div>
+        <div class="prob-tags">
+          <span class="tag cyan">DFS</span>
+          <span class="tag cyan">Prim MST</span>
+          <span class="tag">Greedy</span>
+          <span class="tag">10 Tests</span>
+        </div>
+      </div>
+      <div class="prob-card reveal">
+        <div class="prob-num">Đề 809</div>
+        <div class="prob-title">Cây Phủ Kruskal</div>
+        <div class="prob-desc">Thuật toán Kruskal tìm cây phủ nhỏ nhất dùng Union-Find (Disjoint Set) với path compression.</div>
+        <div class="prob-tags">
+          <span class="tag gold">Kruskal</span>
+          <span class="tag gold">Union-Find</span>
+          <span class="tag">Sorting</span>
+          <span class="tag">10 Tests</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ALGORITHMS -->
+<section id="algorithms" style="padding-top:60px;">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-tag">Thuật Toán</div>
+      <h2 class="section-title">6 Thuật Toán Cốt Lõi</h2>
+      <p class="section-sub">Mỗi thuật toán được cài đặt theo đúng pseudocode từ đề tài.</p>
+    </div>
+    <div class="algo-row">
+      <div class="algo-card reveal">
+        <div class="algo-icon" style="background:rgba(79,142,247,0.15);">🔍</div>
+        <h3>Kiểm Tra Euler</h3>
+        <p>Đồ thị vô hướng là Euler khi và chỉ khi liên thông và mọi đỉnh đều có bậc chẵn.</p>
+        <ul class="algo-steps">
+          <li><span class="step-n">1</span>Tính bậc deg(v) của từng đỉnh</li>
+          <li><span class="step-n">2</span>Kiểm tra đồ thị liên thông (BFS)</li>
+          <li><span class="step-n">3</span>Kiểm tra tất cả bậc chẵn</li>
+          <li><span class="step-n">4</span>Kết luận Euler hay không</li>
+        </ul>
+      </div>
+      <div class="algo-card reveal">
+        <div class="algo-icon" style="background:rgba(139,92,246,0.15);">📍</div>
+        <h3>Dijkstra</h3>
+        <p>Tìm đường đi ngắn nhất từ đỉnh x đến y trong đồ thị có trọng số không âm.</p>
+        <ul class="algo-steps">
+          <li><span class="step-n">1</span>Khởi tạo d[v] = a[x][v], T = V \ {x}</li>
+          <li><span class="step-n">2</span>Tìm u ∈ T có d[u] nhỏ nhất</li>
+          <li><span class="step-n">3</span>Loại u khỏi T, cố định nhãn</li>
+          <li><span class="step-n">4</span>Cập nhật d[v] = min(d[v], d[u]+a[u][v])</li>
+        </ul>
+      </div>
+    </div>
+    <div class="algo-row">
+      <div class="algo-card reveal">
+        <div class="algo-icon" style="background:rgba(34,211,238,0.15);">🌿</div>
+        <h3>Prim MST</h3>
+        <p>Tìm cây phủ nhỏ nhất bằng cách mở rộng tập S bởi các cạnh có trọng số nhỏ nhất.</p>
+        <ul class="algo-steps">
+          <li><span class="step-n">1</span>Thêm đỉnh 1 vào tập S đã đánh dấu</li>
+          <li><span class="step-n">2</span>Tìm canh (i,j) nhỏ nhất: i∈S, j∉S</li>
+          <li><span class="step-n">3</span>Thêm j vào S, ghi canh vào cây</li>
+          <li><span class="step-n">4</span>Lặp đến khi S có đủ n đỉnh</li>
+        </ul>
+      </div>
+      <div class="algo-card reveal">
+        <div class="algo-icon" style="background:rgba(245,158,11,0.15);">⚡</div>
+        <h3>Kruskal MST</h3>
+        <p>Sắp xếp cạnh theo trọng số, dùng Union-Find để chọn cạnh không tạo chu trình.</p>
+        <ul class="algo-steps">
+          <li><span class="step-n">1</span>Sắp xếp cạnh theo trọng số tăng dần</li>
+          <li><span class="step-n">2</span>Khởi tạo Union-Find: mỗi đỉnh 1 cây</li>
+          <li><span class="step-n">3</span>Với mỗi cạnh (u,v): nếu khác cây → thêm</li>
+          <li><span class="step-n">4</span>Dừng khi MST có n-1 cạnh</li>
+        </ul>
+      </div>
+    </div>
+    <div class="algo-row">
+      <div class="algo-card reveal">
+        <div class="algo-icon" style="background:rgba(16,185,129,0.15);">↕</div>
+        <h3>BFS Spanning Tree</h3>
+        <p>Duyệt theo chiều ngang dùng hàng đợi, tạo cây phủ theo thứ tự BFS.</p>
+        <ul class="algo-steps">
+          <li><span class="step-n">1</span>Đưa đỉnh đầu vào queue, đánh dấu</li>
+          <li><span class="step-n">2</span>Lấy u ra khỏi queue</li>
+          <li><span class="step-n">3</span>Thêm cạnh (u,v) với v chưa thăm vào cây</li>
+          <li><span class="step-n">4</span>Đưa v vào queue, đánh dấu</li>
+        </ul>
+      </div>
+      <div class="algo-card reveal">
+        <div class="algo-icon" style="background:rgba(239,68,68,0.15);">↳</div>
+        <h3>DFS Spanning Tree</h3>
+        <p>Duyệt theo chiều sâu dùng đệ quy, tạo cây phủ theo thứ tự DFS.</p>
+        <ul class="algo-steps">
+          <li><span class="step-n">1</span>Đánh dấu đỉnh u đã thăm</li>
+          <li><span class="step-n">2</span>Với mỗi v kề u chưa thăm</li>
+          <li><span class="step-n">3</span>Thêm cạnh (u,v) vào cây</li>
+          <li><span class="step-n">4</span>Gọi đệ quy DFS(v)</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Complexity Table -->
+    <div class="complexity-section reveal" style="margin-top:16px;">
+      <h3 style="margin-bottom:24px;font-size:1.1rem;">Độ Phức Tạp Thuật Toán</h3>
+      <table>
+        <thead>
+          <tr><th>Thuật Toán</th><th>Thời Gian</th><th>Không Gian</th><th>Cấu Trúc DL</th><th>Ứng Dụng</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Kiểm tra Euler</td><td><span class="complexity">O(V + E)</span></td><td><span class="complexity">O(V)</span></td><td>Adjacency Matrix</td><td>Chu trình Euler</td></tr>
+          <tr><td>Dijkstra (naive)</td><td><span class="complexity">O(V²)</span></td><td><span class="complexity">O(V)</span></td><td>Array</td><td>Shortest path</td></tr>
+          <tr><td>Prim (naive)</td><td><span class="complexity">O(V²)</span></td><td><span class="complexity">O(V)</span></td><td>Array</td><td>MST</td></tr>
+          <tr><td>Kruskal</td><td><span class="complexity">O(E log E)</span></td><td><span class="complexity">O(V)</span></td><td>Union-Find</td><td>MST</td></tr>
+          <tr><td>BFS Tree</td><td><span class="complexity">O(V + E)</span></td><td><span class="complexity">O(V)</span></td><td>Queue</td><td>Spanning Tree</td></tr>
+          <tr><td>DFS Tree</td><td><span class="complexity">O(V + E)</span></td><td><span class="complexity">O(V)</span></td><td>Stack/Recursion</td><td>Spanning Tree</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- DEMO -->
+<section id="demo" style="padding-top:60px;">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-tag">Demo</div>
+      <h2 class="section-title">Trực Quan Hóa Đồ Thị</h2>
+      <p class="section-sub">Xem các thuật toán hoạt động trực tiếp trên canvas tương tác.</p>
+    </div>
+    <div class="demo-section reveal">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+        <h2 style="font-size:1.2rem;">Graph Visualizer</h2>
+        <div class="demo-controls">
+          <button class="ctrl-btn active" onclick="setAlgo('bfs')">BFS Tree</button>
+          <button class="ctrl-btn" onclick="setAlgo('dfs')">DFS Tree</button>
+          <button class="ctrl-btn" onclick="setAlgo('dijkstra')">Dijkstra</button>
+          <button class="ctrl-btn" onclick="setAlgo('prim')">Prim</button>
+          <button class="ctrl-btn" onclick="setAlgo('kruskal')">Kruskal</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+        <button class="btn btn-primary" style="padding:9px 20px;font-size:0.85rem;" onclick="generateGraph()">↺ Đồ Thị Mới</button>
+        <button class="btn btn-ghost" style="padding:9px 20px;font-size:0.85rem;" onclick="runAlgo()">▶ Chạy Thuật Toán</button>
+        <button class="btn btn-ghost" style="padding:9px 20px;font-size:0.85rem;" onclick="resetViz()">⏹ Reset</button>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="graph-canvas"></canvas>
+        <div class="canvas-info">
+          <div class="info-pill">Đỉnh: <span id="info-v">7</span></div>
+          <div class="info-pill">Cạnh: <span id="info-e">0</span></div>
+          <div class="info-pill">Thuật toán: <span id="info-algo">BFS Tree</span></div>
+          <div class="info-pill">Trạng thái: <span id="info-status">Sẵn sàng</span></div>
+        </div>
+      </div>
+      <div id="algo-output" style="margin-top:16px;background:#0d0d14;border:1px solid var(--border);border-radius:14px;padding:20px;min-height:60px;font-family:monospace;font-size:0.85rem;color:var(--cyan);line-height:1.8;white-space:pre-wrap;"></div>
+    </div>
+  </div>
+</section>
+
+<!-- CODE -->
+<section id="code" style="padding-top:60px;">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-tag">Source Code</div>
+      <h2 class="section-title">Code C Hoàn Chỉnh</h2>
+      <p class="section-sub">Code được compile và test với MinGW gcc, tuân thủ đúng thuật toán trong đề tài.</p>
+    </div>
+    <div class="reveal">
+      <div class="code-tabs">
+        <div class="code-tab active" onclick="showCode('806')">Đề 806</div>
+        <div class="code-tab" onclick="showCode('807')">Đề 807</div>
+        <div class="code-tab" onclick="showCode('808')">Đề 808</div>
+        <div class="code-tab" onclick="showCode('809')">Đề 809</div>
+      </div>
+      <div id="code-806" class="code-block active"><pre><span class="cm">/* De 806: Bai toan tren do thi - Euler, Dijkstra, Prim */</span>
+<span class="kw">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+<span class="kw">#include</span> <span class="str">&lt;stdlib.h&gt;</span>
+<span class="kw">#include</span> <span class="str">&lt;time.h&gt;</span>
+<span class="kw">#define</span> <span class="type">MAX</span> <span class="num">100</span>
+<span class="kw">#define</span> <span class="type">INF</span> <span class="num">1000000</span>
+
+<span class="cm">// Phat sinh do thi lien thong ngau nhien</span>
+<span class="type">void</span> <span class="fn">sinh_ma_tran</span>(<span class="type">int</span> n, <span class="type">int</span> a[][MAX]) {
+    <span class="cm">// Tao cay khung de dam bao lien thong</span>
+    <span class="type">int</span> thutu[MAX];
+    <span class="kw">for</span> (<span class="type">int</span> i=<span class="num">1</span>; i&lt;=n; i++) thutu[i]=i;
+    <span class="cm">// Xao tron thu tu dinh</span>
+    <span class="kw">for</span> (<span class="type">int</span> i=n; i&gt;=<span class="num">2</span>; i--) {
+        <span class="type">int</span> j = rand()%i+<span class="num">1</span>;
+        <span class="type">int</span> tmp=thutu[i]; thutu[i]=thutu[j]; thutu[j]=tmp;
+    }
+    <span class="kw">for</span> (<span class="type">int</span> i=<span class="num">2</span>; i&lt;=n; i++) {
+        <span class="type">int</span> u=thutu[i], v=thutu[rand()%(i-<span class="num">1</span>)+<span class="num">1</span>];
+        <span class="type">int</span> w=rand()%<span class="num">20</span>+<span class="num">1</span>;
+        a[u][v]=w; a[v][u]=w;
+    }
+}
+
+<span class="cm">// a) Kiem tra Euler: lien thong + tat ca bac chan</span>
+<span class="type">void</span> <span class="fn">kiem_tra_euler</span>(<span class="type">int</span> n, <span class="type">int</span> a[][MAX]) {
+    <span class="type">int</span> bac[MAX]={<span class="num">0</span>};
+    <span class="kw">for</span> (<span class="type">int</span> i=<span class="num">1</span>;i&lt;=n;i++)
+        <span class="kw">for</span> (<span class="type">int</span> j=<span class="num">1</span>;j&lt;=n;j++)
+            <span class="kw">if</span> (a[i][j]&gt;<span class="num">0</span>) bac[i]++;
+    <span class="type">int</span> chan=<span class="num">1</span>;
+    <span class="kw">for</span> (<span class="type">int</span> i=<span class="num">1</span>;i&lt;=n;i++) <span class="kw">if</span> (bac[i]%<span class="num">2</span>!=<span class="num">0</span>) {chan=<span class="num">0</span>; <span class="kw">break</span>;}
+    printf(<span class="str">"=> Do thi %s Euler\n"</span>, chan?<span class="str">"LA"</span>:<span class="str">"KHONG PHAI"</span>);
+}
+
+<span class="cm">// b) Dijkstra tim duong ngan nhat x -> y</span>
+<span class="type">void</span> <span class="fn">dijkstra</span>(<span class="type">int</span> n, <span class="type">int</span> a[][MAX], <span class="type">int</span> x, <span class="type">int</span> y) {
+    <span class="type">int</span> d[MAX], prev[MAX], T[MAX];
+    <span class="kw">for</span> (<span class="type">int</span> i=<span class="num">1</span>;i&lt;=n;i++) {
+        d[i]=a[x][i]&gt;<span class="num">0</span>?a[x][i]:<span class="type">INF</span>;
+        prev[i]=x; T[i]=<span class="num">1</span>;
+    }
+    d[x]=<span class="num">0</span>; T[x]=<span class="num">0</span>;
+    <span class="kw">for</span> (<span class="type">int</span> iter=<span class="num">0</span>;iter&lt;n-<span class="num">1</span>;iter++) {
+        <span class="type">int</span> u=-<span class="num">1</span>;
+        <span class="kw">for</span> (<span class="type">int</span> i=<span class="num">1</span>;i&lt;=n;i++)
+            <span class="kw">if</span> (T[i]&&(u==-<span class="num">1</span>||d[i]&lt;d[u])) u=i;
+        <span class="kw">if</span> (u==-<span class="num">1</span>||d[u]==<span class="type">INF</span>) <span class="kw">break</span>;
+        T[u]=<span class="num">0</span>;
+        <span class="kw">for</span> (<span class="type">int</span> v=<span class="num">1</span>;v&lt;=n;v++)
+            <span class="kw">if</span> (T[v]&&a[u][v]&gt;<span class="num">0</span>&&d[u]+a[u][v]&lt;d[v]) {
+                d[v]=d[u]+a[u][v]; prev[v]=u;
+            }
+    }
+    printf(<span class="str">"Do dai ngan nhat = %d\n"</span>, d[y]);
+}</pre></div>
+      <div id="code-807" class="code-block"><pre><span class="cm">/* De 807: Cay phu theo chieu ngang - BFS Spanning Tree */</span>
+<span class="kw">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+<span class="kw">#define</span> <span class="type">MAX</span> <span class="num">100</span>
+
+<span class="type">void</span> <span class="fn">bfs_span</span>(<span class="type">int</span> n, <span class="type">int</span> a[][<span class="type">MAX</span>], <span class="type">int</span> s) {
+    <span class="type">int</span> tham[MAX]={<span class="num">0</span>}, q[MAX*MAX], t=<span class="num">0</span>, c=<span class="num">0</span>;
+    q[c++]=s; tham[s]=<span class="num">1</span>;
+    printf(<span class="str">"Cay phu BFS tu dinh %d:\n"</span>, s);
+    <span class="kw">while</span> (t &lt; c) {
+        <span class="type">int</span> u = q[t++];
+        <span class="kw">for</span> (<span class="type">int</span> v=<span class="num">1</span>; v&lt;=n; v++)
+            <span class="kw">if</span> (a[u][v] && !tham[v]) {
+                tham[v]=<span class="num">1</span>;
+                printf(<span class="str">"  %d - %d\n"</span>, u, v);
+                q[c++]=v;
+            }
+    }
+}
+
+<span class="type">int</span> <span class="fn">main</span>() {
+    <span class="type">int</span> n, a[MAX][MAX];
+    printf(<span class="str">"So dinh: "</span>); scanf(<span class="str">"%d"</span>, &n);
+    <span class="cm">/* Nhap ma tran ke */</span>
+    <span class="kw">for</span>(<span class="type">int</span> i=<span class="num">1</span>;i&lt;=n;i++)
+        <span class="kw">for</span>(<span class="type">int</span> j=<span class="num">1</span>;j&lt;=n;j++)
+            scanf(<span class="str">"%d"</span>, &a[i][j]);
+    <span class="type">int</span> s; printf(<span class="str">"Dinh bat dau: "</span>); scanf(<span class="str">"%d"</span>, &s);
+    <span class="fn">bfs_span</span>(n, a, s);
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre></div>
+      <div id="code-808" class="code-block"><pre><span class="cm">/* De 808: DFS Spanning Tree + Prim MST */</span>
+<span class="kw">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+<span class="kw">#define</span> <span class="type">MAX</span> <span class="num">100</span>
+<span class="kw">#define</span> <span class="type">INF</span> <span class="num">1000000</span>
+
+<span class="type">int</span> tham[MAX];
+
+<span class="type">void</span> <span class="fn">DFS</span>(<span class="type">int</span> n, <span class="type">int</span> a[][<span class="type">MAX</span>], <span class="type">int</span> u) {
+    tham[u]=<span class="num">1</span>;
+    <span class="kw">for</span> (<span class="type">int</span> v=<span class="num">1</span>; v&lt;=n; v++)
+        <span class="kw">if</span> (a[u][v]&gt;<span class="num">0</span> && !tham[v]) {
+            printf(<span class="str">"  %d - %d\n"</span>, u, v);
+            <span class="fn">DFS</span>(n, a, v);
+        }
+}
+
+<span class="type">void</span> <span class="fn">prim</span>(<span class="type">int</span> n, <span class="type">int</span> a[][<span class="type">MAX</span>]) {
+    <span class="type">int</span> vis[MAX]={<span class="num">0</span>}; <span class="type">int</span> tong=<span class="num">0</span>;
+    vis[<span class="num">1</span>]=<span class="num">1</span>;
+    <span class="kw">for</span> (<span class="type">int</span> k=<span class="num">1</span>; k&lt;n; k++) {
+        <span class="type">int</span> min=<span class="type">INF</span>, u=-<span class="num">1</span>, v=-<span class="num">1</span>;
+        <span class="kw">for</span> (<span class="type">int</span> i=<span class="num">1</span>;i&lt;=n;i++) <span class="kw">if</span> (vis[i])
+            <span class="kw">for</span> (<span class="type">int</span> j=<span class="num">1</span>;j&lt;=n;j++) <span class="kw">if</span> (!vis[j]&&a[i][j]&gt;<span class="num">0</span>&&a[i][j]&lt;min) {
+                min=a[i][j]; u=i; v=j;
+            }
+        <span class="kw">if</span> (u==-<span class="num">1</span>) <span class="kw">break</span>;
+        printf(<span class="str">"  %d-%d: %d\n"</span>, u, v, a[u][v]);
+        tong+=a[u][v]; vis[v]=<span class="num">1</span>;
+    }
+    printf(<span class="str">"Tong = %d\n"</span>, tong);
+}</pre></div>
+      <div id="code-809" class="code-block"><pre><span class="cm">/* De 809: Kruskal MST voi Union-Find */</span>
+<span class="kw">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+<span class="kw">#include</span> <span class="str">&lt;stdlib.h&gt;</span>
+<span class="kw">#define</span> <span class="type">MAX</span> <span class="num">1001</span>
+
+<span class="kw">typedef</span> <span class="type">struct</span> { <span class="type">int</span> u, v, w; } <span class="type">Edge</span>;
+<span class="type">int</span> cha[MAX], rnk[MAX];
+
+<span class="cm">// Union-Find voi path compression</span>
+<span class="type">int</span> <span class="fn">find</span>(<span class="type">int</span> x) {
+    <span class="kw">return</span> cha[x]==x ? x : (cha[x]=<span class="fn">find</span>(cha[x]));
+}
+<span class="type">int</span> <span class="fn">unite</span>(<span class="type">int</span> x, <span class="type">int</span> y) {
+    <span class="type">int</span> rx=<span class="fn">find</span>(x), ry=<span class="fn">find</span>(y);
+    <span class="kw">if</span> (rx==ry) <span class="kw">return</span> <span class="num">0</span>;
+    <span class="kw">if</span> (rnk[rx]&lt;rnk[ry]) { <span class="type">int</span> t=rx; rx=ry; ry=t; }
+    cha[ry]=rx;
+    <span class="kw">if</span> (rnk[rx]==rnk[ry]) rnk[rx]++;
+    <span class="kw">return</span> <span class="num">1</span>;
+}
+
+<span class="type">void</span> <span class="fn">kruskal</span>(<span class="type">int</span> n, <span class="type">Edge</span>* e, <span class="type">int</span> m) {
+    <span class="kw">for</span>(<span class="type">int</span> i=<span class="num">1</span>;i&lt;=n;i++) cha[i]=i, rnk[i]=<span class="num">0</span>;
+    qsort(e, m, <span class="kw">sizeof</span>(<span class="type">Edge</span>), cmp);
+    <span class="type">int</span> tong=<span class="num">0</span>, dem=<span class="num">0</span>;
+    <span class="kw">for</span>(<span class="type">int</span> i=<span class="num">0</span>; i&lt;m && dem&lt;n-<span class="num">1</span>; i++)
+        <span class="kw">if</span>(<span class="fn">unite</span>(e[i].u, e[i].v)) {
+            printf(<span class="str">"  %d-%d: %d\n"</span>, e[i].u, e[i].v, e[i].w);
+            tong+=e[i].w; dem++;
+        }
+    printf(<span class="str">"Tong trong so = %d\n"</span>, tong);
+}</pre></div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section id="team" style="padding-top:60px;">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-tag">Nhóm</div>
+      <h2 class="section-title">Thành Viên</h2>
+    </div>
+    <div class="team-cards">
+      <div class="team-card reveal">
+        <div class="avatar">P</div>
+        <h3>Phát</h3>
+        <p>Full-stack Developer · Cài đặt thuật toán C</p>
+      </div>
+      <div class="team-card reveal">
+        <div class="avatar">T</div>
+        <h3>Triết</h3>
+        <p>Algorithm Analyst · Phân tích & kiểm thử</p>
+      </div>
+      <div class="team-card reveal">
+        <div class="avatar">H</div>
+        <h3>Hoàng</h3>
+        <p>Algorithm Analyst · Phân tích & kiểm thử</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <p>© 2024 <strong>PBL1 — Phát & Triết & Hoàng</strong> · HUTECH University · Lý Thuyết Đồ Thị</p>
+    <p style="margin-top:8px;font-size:0.8rem;">Ngôn ngữ C · GCC MinGW · 4 Đề Tài · 6 Thuật Toán · 40 Test Cases</p>
+  </div>
+</footer>
+
+<script>
+// ============ ANIMATED BACKGROUND ============
+const bgCanvas = document.getElementById('canvas-bg');
+const bgCtx = bgCanvas.getContext('2d');
+let bgW, bgH;
+const particles = [];
+
+function resizeBg() {
+  bgW = bgCanvas.width = window.innerWidth;
+  bgH = bgCanvas.height = window.innerHeight;
+}
+resizeBg();
+window.addEventListener('resize', resizeBg);
+
+for (let i = 0; i < 60; i++) {
+  particles.push({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    vx: (Math.random() - 0.5) * 0.4,
+    vy: (Math.random() - 0.5) * 0.4,
+    r: Math.random() * 2 + 0.5,
+    color: ['#4f8ef7','#8b5cf6','#22d3ee','#10b981'][Math.floor(Math.random()*4)]
+  });
+}
+
+function animBg() {
+  bgCtx.clearRect(0, 0, bgW, bgH);
+  particles.forEach(p => {
+    p.x += p.vx; p.y += p.vy;
+    if (p.x < 0) p.x = bgW; if (p.x > bgW) p.x = 0;
+    if (p.y < 0) p.y = bgH; if (p.y > bgH) p.y = 0;
+    bgCtx.beginPath();
+    bgCtx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+    bgCtx.fillStyle = p.color;
+    bgCtx.fill();
+  });
+  particles.forEach((a, i) => {
+    particles.slice(i+1).forEach(b => {
+      const d = Math.hypot(a.x-b.x, a.y-b.y);
+      if (d < 120) {
+        bgCtx.beginPath();
+        bgCtx.moveTo(a.x, a.y); bgCtx.lineTo(b.x, b.y);
+        bgCtx.strokeStyle = `rgba(79,142,247,${(1-d/120)*0.15})`;
+        bgCtx.lineWidth = 0.5;
+        bgCtx.stroke();
+      }
+    });
+  });
+  requestAnimationFrame(animBg);
+}
+animBg();
+
+// ============ SCROLL REVEAL ============
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ============ CODE TABS ============
+function showCode(id) {
+  document.querySelectorAll('.code-block').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('code-'+id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ============ GRAPH VISUALIZER ============
+const gc = document.getElementById('graph-canvas');
+const gctx = gc.getContext('2d');
+let currentAlgo = 'bfs';
+let nodes = [], edges = [], algoSteps = [], stepIdx = 0, animTimer = null;
+
+function resizeGC() {
+  gc.width = gc.offsetWidth;
+  gc.height = 360;
+}
+resizeGC();
+window.addEventListener('resize', () => { resizeGC(); drawGraph(); });
+
+const algoNames = {bfs:'BFS Tree', dfs:'DFS Tree', dijkstra:'Dijkstra', prim:'Prim MST', kruskal:'Kruskal MST'};
+
+function setAlgo(a) {
+  currentAlgo = a;
+  document.querySelectorAll('.ctrl-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('info-algo').textContent = algoNames[a];
+  resetViz();
+}
+
+function generateGraph() {
+  if (animTimer) { clearInterval(animTimer); animTimer = null; }
+  const n = 7;
+  const cx = gc.width/2, cy = gc.height/2, r = Math.min(gc.width, gc.height)*0.32;
+  nodes = Array.from({length:n}, (_,i) => ({
+    id: i, x: cx + r*Math.cos(2*Math.PI*i/n - Math.PI/2),
+    y: cy + r*Math.sin(2*Math.PI*i/n - Math.PI/2),
+    color: '#4f8ef7', visited: false, inTree: false
+  }));
+  edges = [];
+  // Spanning tree for connectivity
+  const order = [...Array(n).keys()].sort(() => Math.random()-0.5);
+  for (let i=1;i<n;i++) {
+    const u = order[i], v = order[Math.floor(Math.random()*i)];
+    const w = Math.floor(Math.random()*18)+2;
+    edges.push({u, v, w, color:'#2a2a3a', inTree:false});
+  }
+  // Extra edges
+  for (let k=0;k<4;k++) {
+    const u=Math.floor(Math.random()*n), v=Math.floor(Math.random()*n);
+    if (u!==v && !edges.some(e=>(e.u===u&&e.v===v)||(e.u===v&&e.v===u))) {
+      edges.push({u, v, w: Math.floor(Math.random()*18)+2, color:'#2a2a3a', inTree:false});
+    }
+  }
+  document.getElementById('info-v').textContent = n;
+  document.getElementById('info-e').textContent = edges.length;
+  document.getElementById('info-status').textContent = 'Sẵn sàng';
+  document.getElementById('algo-output').textContent = '';
+  algoSteps = [];
+  drawGraph();
+}
+
+function drawGraph() {
+  gctx.clearRect(0, 0, gc.width, gc.height);
+  // Draw edges
+  edges.forEach(e => {
+    const a=nodes[e.u], b=nodes[e.v];
+    gctx.beginPath();
+    gctx.moveTo(a.x,a.y); gctx.lineTo(b.x,b.y);
+    gctx.strokeStyle = e.color==='#2a2a3a' ? 'rgba(255,255,255,0.45)' : e.color;
+    gctx.lineWidth = e.inTree ? 4 : 2.0;
+    gctx.stroke();
+    // Weight label
+    const mx=(a.x+b.x)/2, my=(a.y+b.y)/2;
+    gctx.fillStyle = 'rgba(180,180,210,0.95)';
+    gctx.font = '11px Inter';
+    gctx.textAlign = 'center';
+    gctx.fillText(e.w, mx, my-4);
+  });
+  // Draw nodes
+  nodes.forEach(n => {
+    gctx.beginPath();
+    gctx.arc(n.x, n.y, 18, 0, Math.PI*2);
+    const grad = gctx.createRadialGradient(n.x-4,n.y-4,2,n.x,n.y,18);
+    const c = n.visited ? '#10b981' : n.inTree ? '#f59e0b' : '#4f8ef7';
+    grad.addColorStop(0, c+'dd');
+    grad.addColorStop(1, c+'44');
+    gctx.fillStyle = grad;
+    gctx.strokeStyle = c;
+    gctx.lineWidth = 2;
+    gctx.fill(); gctx.stroke();
+    gctx.fillStyle = '#fff';
+    gctx.font = 'bold 13px Inter';
+    gctx.textAlign = 'center';
+    gctx.textBaseline = 'middle';
+    gctx.fillText(n.id+1, n.x, n.y);
+  });
+}
+
+function bfsSteps() {
+  const steps = [], vis = new Array(nodes.length).fill(false), q = [0];
+  vis[0] = true;
+  steps.push({type:'visit', node:0, msg:`Bắt đầu từ đỉnh 1, đưa vào queue`});
+  while (q.length) {
+    const u = q.shift();
+    const nbrs = edges.filter(e=>e.u===u||e.v===u).map(e=>e.u===u?e.v:e.u);
+    nbrs.forEach(v => {
+      if (!vis[v]) {
+        vis[v]=true; q.push(v);
+        const e = edges.find(e=>(e.u===u&&e.v===v)||(e.u===v&&e.v===u));
+        steps.push({type:'edge', edge:edges.indexOf(e), node:v, msg:`Thêm cạnh (${u+1}→${v+1}) vào cây BFS`});
+      }
+    });
+  }
+  return steps;
+}
+
+function dfsSteps() {
+  const steps = [], vis = new Array(nodes.length).fill(false);
+  function dfs(u) {
+    vis[u]=true;
+    steps.push({type:'visit', node:u, msg:`DFS thăm đỉnh ${u+1}`});
+    const nbrs = edges.filter(e=>e.u===u||e.v===u).map(e=>e.u===u?e.v:e.u);
+    nbrs.forEach(v => {
+      if (!vis[v]) {
+        const e = edges.find(e=>(e.u===u&&e.v===v)||(e.u===v&&e.v===u));
+        steps.push({type:'edge', edge:edges.indexOf(e), node:v, msg:`Thêm cạnh (${u+1}→${v+1}) vào cây DFS`});
+        dfs(v);
+      }
+    });
+  }
+  dfs(0); return steps;  
+}
+
+function dijkstraSteps() {
+  const n = nodes.length, d = new Array(n).fill(1e9), prev = new Array(n).fill(-1);
+  const T = new Array(n).fill(true), steps = [];
+  d[0]=0;
+  steps.push({type:'visit', node:0, msg:`Khởi tạo: d[1]=0, d[v]=∞ với v≠1`});
+  for (let iter=0;iter<n-1;iter++) {
+    let u=-1;
+    for(let i=0;i<n;i++) if(T[i]&&(u===-1||d[i]<d[u])) u=i;
+    if(u===-1||d[u]===1e9) break;
+    T[u]=false;
+    steps.push({type:'visit', node:u, msg:`Cố định nhãn đỉnh ${u+1}, d[${u+1}]=${d[u]}`});
+    edges.filter(e=>e.u===u||e.v===u).forEach(e => {
+      const v=e.u===u?e.v:e.u;
+      if(T[v]&&d[u]+e.w<d[v]) {
+        d[v]=d[u]+e.w; prev[v]=u;
+        const ei=edges.indexOf(e);
+        steps.push({type:'relax', edge:ei, node:v, msg:`Cập nhật d[${v+1}]=${d[v]} qua đỉnh ${u+1}`});
+      }
+    });
+  }
+  // Mark path to last node
+  let cur=n-1;
+  while(cur!==-1&&prev[cur]!==-1) {
+    const pc=prev[cur];
+    const e=edges.find(e=>(e.u===pc&&e.v===cur)||(e.u===cur&&e.v===pc));
+    if(e) steps.push({type:'path', edge:edges.indexOf(e), msg:`Đường đi: ${pc+1}→${cur+1}`});
+    cur=pc;
+  }
+  return steps;
+}
+
+function primSteps() {
+  const n=nodes.length, vis=new Array(n).fill(false), steps=[];
+  vis[0]=true;
+  steps.push({type:'visit', node:0, msg:`Prim: Thêm đỉnh 1 vào tập S`});
+  for(let k=0;k<n-1;k++) {
+    let min=1e9,bu=-1,bv=-1,be=-1;
+    edges.forEach((e,i)=>{
+      const {u,v,w}=e;
+      if(vis[u]&&!vis[v]&&w<min){min=w;bu=u;bv=v;be=i;}
+      if(vis[v]&&!vis[u]&&w<min){min=w;bu=v;bv=u;be=i;}
+    });
+    if(bu===-1) break;
+    vis[bv]=true;
+    steps.push({type:'edge', edge:be, node:bv, msg:`Chọn cạnh (${bu+1}→${bv+1}) w=${min}, thêm ${bv+1} vào S`});
+  }
+  return steps;
+}
+
+function kruskalSteps() {
+  const n=nodes.length, cha=[...Array(n).keys()], steps=[];
+  const find=x=>cha[x]===x?x:(cha[x]=find(cha[x]));
+  const unite=(x,y)=>{const rx=find(x),ry=find(y);if(rx===ry)return false;cha[ry]=rx;return true;};
+  const sorted=[...edges].map((e,i)=>({...e,idx:i})).sort((a,b)=>a.w-b.w);
+  steps.push({type:'init', msg:`Kruskal: Sắp xếp ${edges.length} cạnh theo trọng số`});
+  sorted.forEach(e=>{
+    if(unite(e.u,e.v)) steps.push({type:'edge', edge:e.idx, node:e.v, msg:`Thêm cạnh (${e.u+1}→${e.v+1}) w=${e.w}`});
+    else steps.push({type:'skip', msg:`Bỏ qua (${e.u+1}→${e.v+1}) w=${e.w} — tạo chu trình`});
+  });
+  return steps;
+}
+
+function runAlgo() {
+  if (animTimer) clearInterval(animTimer);
+  resetNodes();
+  algoSteps = {bfs:bfsSteps, dfs:dfsSteps, dijkstra:dijkstraSteps, prim:primSteps, kruskal:kruskalSteps}[currentAlgo]();
+  stepIdx = 0;
+  const out = document.getElementById('algo-output');
+  out.textContent = '';
+  document.getElementById('info-status').textContent = 'Đang chạy...';
+
+  animTimer = setInterval(() => {
+    if (stepIdx >= algoSteps.length) {
+      clearInterval(animTimer); animTimer = null;
+      document.getElementById('info-status').textContent = 'Hoàn thành ✓';
+      return;
+    }
+    const s = algoSteps[stepIdx++];
+    if (s.type === 'visit' && s.node !== undefined) nodes[s.node].visited = true;
+    if ((s.type === 'edge'||s.type==='path'||s.type==='relax') && s.edge !== undefined) {
+      edges[s.edge].inTree = true;
+      edges[s.edge].color = {edge:'#10b981', path:'#f59e0b', relax:'#22d3ee'}[s.type]||'#10b981';
+      if (s.node !== undefined) nodes[s.node].inTree = true;
+    }
+    out.textContent += `[${stepIdx}] ${s.msg}\n`;
+    out.scrollTop = out.scrollHeight;
+    drawGraph();
+  }, 650);
+}
+
+function resetNodes() {
+  nodes.forEach(n => { n.visited = false; n.inTree = false; });
+  edges.forEach(e => { e.inTree = false; e.color = '#2a2a3a'; });
+  drawGraph();
+}
+
+function resetViz() {
+  if (animTimer) { clearInterval(animTimer); animTimer = null; }
+  resetNodes();
+  document.getElementById('algo-output').textContent = '';
+  document.getElementById('info-status').textContent = 'Sẵn sàng';
+}
+
+// Init
+generateGraph();
+</script>
+</body>
+</html>
