@@ -208,3 +208,15 @@ int main() {
 
     return 0;
 }
+
+/*
+ * # TRẢ LỜI: Giải thích cách sinh bảng chân trị biểu thức Boole:
+ * 1. Chuẩn hóa biểu thức:
+ *    - Hàm `addImplicitAnd` tự động thêm toán tử VÀ ẩn (*) giữa các biến viết liền nhau hoặc giữa ngoặc đóng và ngoặc mở (ví dụ: `xy` chuyển thành `x*y`).
+ * 2. Biến đổi Trung tố sang Hậu tố (Shunting-yard algorithm):
+ *    - Sử dụng một `stack` lưu toán tử để biến đổi biểu thức trung tố thông thường sang ký pháp Ba Lan ngược (hậu tố - Postfix). Việc này giúp loại bỏ dấu ngoặc và tính toán biểu thức theo đúng thứ tự ưu tiên dễ dàng hơn.
+ * 3. Tính toán biểu thức hậu tố:
+ *    - Duyệt qua từng ký tự của biểu thức hậu tố, nếu gặp biến thì đẩy giá trị của biến vào ngăn xếp `values`, nếu gặp toán tử (+ là OR, * là AND, - là NOT) thì lấy các toán hạng ra tính toán rồi đẩy kết quả trở lại ngăn xếp.
+ * 4. Sinh bảng chân trị:
+ *    - Sử dụng các phép toán bit (bit manipulation) để duyệt qua tất cả 2^n tổ hợp giá trị nhị phân của các biến (từ 0 đến 2^n - 1), tính toán kết quả F cho mỗi tổ hợp và in ra bảng định dạng đẹp mắt.
+ */

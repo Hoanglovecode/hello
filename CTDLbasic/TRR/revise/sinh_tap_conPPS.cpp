@@ -3,7 +3,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 int n,a[100],ok,k;
-char x[]={'a','b','c','d','e','f'};
+//char x[]={'a','b','c','d','e','f'};
 void ktao(){
     for(int i=1;i<=k;i++)a[i]=i;
 }
@@ -17,13 +17,14 @@ void sinh(){
     }
 }
 int main(){
-   freopen("input.txt","r",stdin);
-   freopen("output.txt","w",stdout);
    cin>>n>>k;
    ok=1;
    ktao();
    while(ok){
-    for(int i=1;i<=k;i++)cout<<x[a[i]-1];
+    for(int i=1;i<=k;i++){
+        //cout<<x[a[i]-1];
+        cout<<a[i];
+    }
     cout<<endl;
     sinh();
    }

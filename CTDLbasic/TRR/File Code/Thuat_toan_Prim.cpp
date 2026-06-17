@@ -134,3 +134,14 @@ int main() {
     prim(1); // bắt đầu từ đỉnh 1
     return 0;
 }
+
+/*
+ * # TRẢ LỜI: Giải thích thuật toán Prim tìm cây khung nhỏ nhất (MST):
+ * - Nguyên lý hoạt động:
+ *   + Bắt đầu từ một đỉnh nguồn (mặc định là đỉnh 1), đánh dấu đỉnh này đã thăm.
+ *   + Sử dụng hàng đợi ưu tiên (priority_queue) để lưu trữ các cạnh nối từ các đỉnh đã thăm tới các đỉnh chưa thăm. Hàng đợi này luôn ưu tiên cạnh có trọng số nhỏ nhất ở trên cùng.
+ *   + Ở mỗi bước, lấy ra cạnh có trọng số nhỏ nhất kết nối với một đỉnh chưa thăm v.
+ *   + Đánh dấu v đã thăm, cộng trọng số cạnh vào tổng trọng số cây khung, và thêm các cạnh kề của v với những đỉnh chưa thăm vào hàng đợi.
+ *   + Lặp lại cho đến khi tất cả các đỉnh đều được thăm (được n-1 cạnh) hoặc hàng đợi rỗng (đồ thị không liên thông).
+ */
+

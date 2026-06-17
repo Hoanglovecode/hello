@@ -267,13 +267,12 @@ def generate_word_document(filename, vertices, steps, path, path_length, start_n
                 cell_text = str(dist_val) if dist_val != float('inf') else "∞"
                 cell.text = cell_text
                 
-                # Tô đỏ ô đỏ và chuyển chữ màu trắng in đậm
+                # Chuyển chữ màu đỏ in đậm, không tô màu nền (để ô màu trắng)
                 p = cell.paragraphs[0]
                 p.alignment = WD_ALIGN_PARAGRAPH.CENTER
                 run = p.runs[0]
                 run.font.bold = True
-                run.font.color.rgb = RGBColor(255, 255, 255)
-                set_cell_background(cell, "FF0000") # Màu đỏ nguyên bản
+                run.font.color.rgb = RGBColor(255, 0, 0)
                 selected_so_far.add(v)
             elif v in selected_so_far:
                 # Đỉnh đã được duyệt từ các bước trước

@@ -6,7 +6,7 @@ struct canh{
 };
 int n,m;
 vector<pair<int,int>>adj[maxn];
-bool used[maxn];//true nếu i thuộc tập V(MST) còn false nếu i vẫn còn thuộc ở V
+bool used[maxn];
 int parent[maxn],d[maxn];
 void inp(){
     cin>>n>>m;
@@ -15,7 +15,7 @@ void inp(){
         adj[x].push_back({y,w});
         adj[y].push_back({x,w});
     }
-    memset(used,false,sizeof(used));//Tất cả mảng used[i] hiện tại đều =false
+    memset(used,false,sizeof(used));
     for(int i=1;i<=n;i++)d[i]=INT_MAX;
 }
 void prim(int u){
@@ -27,13 +27,13 @@ void prim(int u){
     while(!pq.empty()){
         pair<int,int>top=pq.top();pq.pop();
         int trongso=top.first,dinh=top.second;
-        if(used[dinh])continue;//Nếu đỉnh đó đã nằm trong v(mst) thì bỏ qua
+        if(used[dinh])continue;
         res+=trongso;
         used[dinh]=true;
         if(u!=dinh){
             mst.push_back({dinh,parent[dinh],trongso});
         }
-        //Duyệt tất cả các đỉnh kề
+
         for(auto it:adj[dinh]){
             int y=it.first,w=it.second;
             if(!used[y]&&w<d[y]){

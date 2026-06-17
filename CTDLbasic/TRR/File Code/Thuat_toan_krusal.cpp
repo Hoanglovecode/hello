@@ -19,16 +19,22 @@
  * 
  * Ví dụ đồ thị minh họa (6 đỉnh, 9 cạnh):
  *   - Input:
- *     6 9
- *     1 2 15
- *     1 3 10
- *     2 3 5
- *     1 4 3
- *     3 4 8
- *     1 6 20
- *     4 6 15
- *     4 5 9
- *     5 6 10
+8 14 
+1 2 4
+1 3 6
+1 4 2
+1 5 5
+2 4 7
+2 7 8
+3 4 3
+3 6 1
+4 6 4
+4 7 5
+5 6 7
+6 7 2
+6 8 3
+7 8 6
+
  *   - Output:
  *     Danh sách sau khi sort theo trọng số:
  *     1. 1 -> 4:  3
@@ -38,25 +44,17 @@
  *     MST = 37
  * ----------------------------------------------------
  */
-
 #include <bits/stdc++.h>
 using namespace std;
 typedef long long ll;
-
-// Cấu trúc lưu cạnh
 struct Edge {
     ll u, v, w;
     bool chosen;
 };
-
-// Cấu trúc DSU
 vector<ll> parent_node, sz;
-
-// Sort theo trọng số tăng dần
 bool comp(Edge a, Edge b) {
     return a.w < b.w;
 }
-
 void show_list_sort(vector<Edge>& edges) {
     cout << "\nDanh sách sau khi sort theo trọng số:\n";
     for (size_t i = 0; i < edges.size(); i++) {
@@ -64,8 +62,6 @@ void show_list_sort(vector<Edge>& edges) {
     }
     cout << endl;
 }
-
-// Khởi tạo DSU
 void make_set(ll n) {
     parent_node.resize(n + 1);
     sz.resize(n + 1, 1);
@@ -73,46 +69,32 @@ void make_set(ll n) {
         parent_node[i] = i;
     }
 }
-
-// Tìm gốc của tập hợp với tối ưu nén đường đi (Path compression)
 ll find_set(ll u) {
     if (parent_node[u] == u) return u;
     return parent_node[u] = find_set(parent_node[u]);
 }
-
-// Hợp nhất hai tập hợp với tối ưu kích thước (Size optimization)
 bool union_sets(ll u, ll v) {
     ll root_u = find_set(u);
     ll root_v = find_set(v);
-    
-    if (root_u == root_v) return false; // Cùng tập hợp, bỏ qua để tránh tạo chu trình
-
+    if (root_u == root_v) return false;
     if (sz[root_u] < sz[root_v]) swap(root_u, root_v);
     parent_node[root_v] = root_u;
     sz[root_u] += sz[root_v];
     return true;
 }
-
 int main() {
-    freopen("input.txt","r",stdin);
-    freopen("output.txt","w",stdout);
     cout << "Nhập số đỉnh và số cạnh: ";
     ll n, m;
     if (!(cin >> n >> m)) return 0;
-
     vector<Edge> edges(m);
     for (int i = 0; i < m; i++) {
         edges[i].chosen = false;
         cout << "Nhập cạnh thứ " << i + 1 << " (u v w): ";
         cin >> edges[i].u >> edges[i].v >> edges[i].w;
     }
-
-    // Sắp xếp các cạnh
     sort(edges.begin(), edges.end(), comp);
     show_list_sort(edges);
-
     make_set(n);
-
     ll total_w = 0, edgeCount = 0;
     for (Edge &e : edges) {
         if (union_sets(e.u, e.v)) {
@@ -122,7 +104,6 @@ int main() {
             if (edgeCount == n - 1) break;
         }
     }
-
     if (edgeCount != n - 1) {
         cout << "Đồ thị không liên thông! Không tồn tại cây khung nhỏ nhất.\n";
     } else {
@@ -134,7 +115,6 @@ int main() {
         }
         cout << "Tổng trọng số của cây khung nhỏ nhất (MST) là: " << total_w << endl;
     }
-
     return 0;
 }
 

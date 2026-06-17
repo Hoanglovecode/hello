@@ -30,56 +30,44 @@
  */
 #include <stdio.h>
 #include <stdbool.h>
-
 int n, m;
 long count = 1;
-
 void init(int a[]) {
     for (int i = 1; i <= m; i++) a[i] = 0;
 }
-
 void out(int a[]) {
     int sum = 0;
     for (int i = 1; i <= m; i++) sum += a[i];
-    
     if (sum != n) return;
-
     printf("\n%d: ", count);
     for (int i = 1; i <= m; i++) printf("%d ", a[i]);
     count++;
 }
-
 void next_gen(int a[]) {
     int j = m;
     while (j >= 1 && a[j] == n) j--;
     if (j == 0) return;
-
     a[j] += 1;
     for (int i = j + 1; i <= m; i++) a[i] = 0;
 }
-
 bool last(int a[]) {
     for (int i = 1; i <= m; i++)
         if (a[i] != n) return true; 
     return false;
 }
-
 void gen(int a[]) {
     init(a);  
     out(a); 
-
     while (last(a)) {
         next_gen(a);
         out(a); // In ra 
     }
 }
-
 int main() {
     printf("Nhap tong n: ");
     scanf("%d", &n);
     printf("Nhap so nghiem: ");
     scanf("%d", &m);
-    
     int a[m + 1];
     gen(a);
 }
