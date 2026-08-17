@@ -2,104 +2,88 @@
 using namespace std;
 struct Node{
     int data;
-    Node* l;
-    Node* r;
+    Node* next;
+    Node(int x){
+        data=x;
+        next=nullptr;
+    }
 };
 typedef struct Node* node;
-node createnode(int x){
-    node p=new Node;
-    p->data=x;
-    p->l=nullptr;
-    p->r=nullptr;
-    return p;
+struct Hashtable{
+    int capacity;
+    node* table;
+};
+typedef struct Hashtable* hashtable;
+hashtable createhashtable(int capacity){
+    hashtable ht=new Hashtable;
+    ht->capacity=capacity;
+    ht->table=new node[capacity];
+    for(int i=0;i<capacity;i++){
+        ht->table[i]==nullptr;
+    }
+    return ht;
 }
-void insert(node &root,int x){
-    if(root==nullptr){
-        root=createnode(x);
-        return;
-    }
-    if(x<root->data)insert(root->l,x);
-    else insert(root->r,x);
+int hashfunction(int key,int capacity){
+    return key %capacity;
 }
-int findmin(node root){
-    while(root->l){
-        root=root->l;
-    }
-    return root->data;
+//insert
+void insert(hashtable ht,int key){
+    int index=hashfunction(key,ht->capacity);
+    node newnode=new Node(key);
+    newnode->next=ht->table[index];
+    ht->table[index]=newnode;
 }
-int findmax(node root){
-    while(root->r){
-        root=root->r;
-    }
-    return root->data;
-}
-node deletenode(node &root,int k){
-    if(root==nullptr)return nullptr;
-    if(k<root->data){
-        root->l=deletenode(root->l,k);
-    }
-    else if(k>root->data){
-        root->r=deletenode(root->r,k);
-    }
-    else{
-        if(root->r==nullptr && root->l==nullptr){
-            delete root;
-            return nullptr;
-        }
-        else if(root->l==nullptr){
-            node tmp=root->r;
-            delete root;
-            return tmp;
-        }
-        else if(root->r==nullptr){
-            node tmp=root->l;
-            delete root;
-            return tmp;
-        }
-        else{
-            node tmp=root->r;
-            while(tmp){
-                tmp=tmp->l;
-            }
-            root->data=tmp->data;
-            root->r=deletenode(root->r,tmp->data);
-        }
-    }
-    return root;
-}
-void inorder(node root){
-    if(root){
-        inorder(root->l);
-        cout<<root->data<<' ';
-        inorder(root->r);
-    }
-}
-node pred(node root,int x){
+//remove
+void remove(hashtable ht,int key){
+    int index=hashfunction(key,ht->capacity);
     node pre=nullptr;
-    while(root){
-        if(x>root->data){
-            pre=root;
-            root=root->r;
+    node cur=ht->table[index];
+    while(cur){
+        if(cur->data==key){
+            if(pre==nullptr){
+                ht->table[index]=cur->next;
+            }
+            else{
+                pre->next=cur->next;
+            }
+            delete cur;
+            return;
         }
-        else{
-            root=root->l;
-        }
+        pre=cur;
+        cur=cur->next;
     }
-    return pre;
 }
-node succ(node root,int x){
-    node succ=nullptr;
-    while(root){
-        if(x<root->data){
-            succ=root;
-            root=root->l;
-        }
-        else{
-            root=root->r;
-        }
+//search
+bool search(hashtable ht,int key){
+    int index= hashfunction(key,ht->capacity);
+    node cur=ht->table[index];
+    while(cur){
+        if(cur->data==key)return true;
+        cur=cur->next;
     }
-    return succ;
+    return false;
+}
+void printhashtable(hashtable ht){
+    for(int i=0;i<ht->capacity;i++){
+        cout<<"["<<i<<"]";
+        node cur=ht->table[i];
+        while(cur){      
+            cout<<cur->data<<"->"; 
+            cur=cur->next;
+        }
+        cout<<"NULL\n";
+    }
 }
 int main(){
-   
+   hashtable ht=createhashtable(10);
+   insert(ht,15);
+   insert(ht,25);
+   insert(ht,35);
+   insert(ht,45);
+   insert(ht,12);
+   printhashtable(ht);
+   cout<<"Search 25:"<<search(ht,25)<<endl;
+   remove(ht,25);
+   cout<<"After delete 25:"<<endl;
+   printhashtable(ht);
 }

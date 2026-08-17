@@ -1,154 +1,88 @@
 #include <bits/stdc++.h>
 using namespace std;
-typedef struct Elementtype{
+typedef struct ElementType{
     int id;
     const char *name;
-}Element;
+} Element;
 struct QueueInfo{
-    int capacity;
-    int count;
-    int front;
-    int rear;
-    Element *thearray;
+    int capacity;      // kích thước tối đa
+    int count;         // số phần tử hiện có
+    int front;         // vị trí đầu hàng đợi
+    int rear;          // vị trí cuối hàng đợi
+    Element *theArray;
 };
-typedef struct QueueInfo* Queue;
+typedef QueueInfo* Queue;
+// Khởi tạo queue
 Queue create_queue(int capacity){
-    Queue q=new QueueInfo;
-    q->capacity=capacity;
-    q->count=0;
-    q->front=1;
-    q->rear=0;
-    q->thearray=new Element[capacity];
+    Queue q = new QueueInfo;
+
+    q->capacity = capacity;
+    q->count = 0;
+
+    q->front = 0;
+    q->rear = capacity - 1;
+
+    q->theArray = new Element[capacity];
+
     return q;
 }
-int is_full(Queue q){
-    return q->count==q->capacity;
+// Kiểm tra rỗng
+bool isEmpty(Queue q){
+    return q->count == 0;
 }
-int isEmpty(Queue q){
-    return q->count==0;
+// Kiểm tra đầy
+bool isFull(Queue q){
+    return q->count == q->capacity;
 }
-int increase(int value,int capacity){
-    value++;
-    if(value>=capacity){
-        return 0;
-    }
-    return value;
+// Tăng chỉ số theo kiểu vòng tròn
+int increase(int index, int capacity){
+    return (index + 1) % capacity;
 }
-int enqueue(Queue q,Element e){
-    if(is_full(q)){
-        return 0;
-    }
-    q->rear=increase(q->rear,q->capacity);
-    q->thearray[q->rear]=e;
+// Thêm phần tử vào queue
+bool enqueue(Queue q, Element e){
+    if(isFull(q))
+        return false;
+    q->rear = increase(q->rear, q->capacity);
+    
+    q->theArray[q->rear] = e;
+
     q->count++;
-    return 1;
+
+    return true;
 }
-Element* dequeue(Queue q){
-    if(isEmpty(q))return nullptr;
-    Element*tmp=&q->thearray[q->front];
-    q->front=increase(q->front,q->capacity);
+
+// Lấy phần tử ra khỏi queue
+Element dequeue(Queue q){
+    Element e = q->theArray[q->front];
+
+    q->front = increase(q->front, q->capacity);
+
     q->count--;
-    return tmp;
+
+    return e;
 }
+
 int main(){
-   freopen("input.txt","r",stdin);
-   freopen("output.txt","w",stdout);
-   Element e1,e2,e3;
-   e1.id=1;e1.name="Nguyen van a";
-   e2.id=2;e2.name="Nguyen van b";
-   e3.id=3;e3.name="Nguyen van c";
-   Queue q=create_queue(10);
-   enqueue (q,e1);
-   enqueue (q,e2);
-   enqueue(q,e3);
-   while(!isEmpty(q)){
-    Element*tmp=dequeue(q);
-    cout<<"Id: "<<tmp->id<<" Name:"<<tmp->name<<endl;
-   }
-   return 0;
-}
-/*
-#include <bits/stdc++.h>
-using namespace std;
+    freopen("input.txt","r",stdin);
+    freopen("output.txt","w",stdout);
 
-struct Element {
-    int id;
-    string name;
-};
+    Element e1 = {1, "Nguyen Van A"};
+    Element e2 = {2, "Nguyen Van B"};
+    Element e3 = {3, "Nguyen Van C"};
 
-class Queue {
-private:
-    int capacity;
-    int count;
-    int front;
-    int rear;
-    vector<Element> arr;
+    Queue q = create_queue(10);
 
-    int increase(int value) {
-        value++;
-        if (value >= capacity)
-            return 0;
-        return value;
-    }
+    enqueue(q, e1);
+    enqueue(q, e2);
+    enqueue(q, e3);
 
-public:
-    Queue(int cap) {
-        capacity = cap;
-        count = 0;
-        front = 0;
-        rear = -1;
-        arr.resize(capacity);
-    }
+    while(!isEmpty(q)){
+        Element e = dequeue(q);
 
-    bool isEmpty() {
-        return count == 0;
-    }
-
-    bool isFull() {
-        return count == capacity;
-    }
-
-    bool enqueue(Element e) {
-        if (isFull())
-            return false;
-
-        rear = increase(rear);
-        arr[rear] = e;
-        count++;
-
-        return true;
-    }
-
-    Element dequeue() {
-        if (isEmpty()) {
-            throw runtime_error("Queue rong");
-        }
-
-        Element temp = arr[front];
-        front = increase(front);
-        count--;
-
-        return temp;
-    }
-};
-
-int main() {
-
-    Queue q(10);
-
-    q.enqueue({1, "Nguyen Van A"});
-    q.enqueue({2, "Nguyen Van B"});
-    q.enqueue({3, "Nguyen Van C"});
-
-    while (!q.isEmpty()) {
-        Element x = q.dequeue();
-
-        cout << "ID: " << x.id
-             << " | Name: " << x.name << endl;
+        cout << "ID: " << e.id
+             << "  Name: " << e.name
+             << endl;
     }
 
     return 0;
 }
-
-
-*/

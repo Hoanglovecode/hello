@@ -1,42 +1,4 @@
-#include <bits/stdc++.h>
-using namespace std;
-typedef struct elementtype{
-    int id;
-    char *name;
-}Element;
-struct NodeInfo{
-    Element e;
-    struct Nodeinfo*next;
-};
-typedef struct NodeInfo *Node;
-typedef struct NodeInfo *Stack;
-Stack create(){
-    Node header=new NodeInfo;
-    header->next=nullptr;
-    return header;
-}
-int is_empty(Stack S){
-    return S->next==nullptr;
-}
-void push(Stack S,Element e){
-    Node newnode= new NodeInfo;
-    newnode->e=e;
-    nenwode->next=S->next;
-    S->next=newnode;
-}
-Node pop(Stack S){
-    if(is_empty(S)){
-        return NULL;
-    }
 
-
-}
-int main(){
-   freopen("input.txt","r",stdin);
-   freopen("output.txt","w",stdout);
-   
-}
-/*
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -158,4 +120,42 @@ int main() {
     destroy(S);
     return 0;
 }
-*/
+
+// #include <bits/stdc++.h>
+// using namespace std;
+// typedef struct elementtype{
+//     int id;
+//     char *name;
+// }Element;
+// struct NodeInfo{
+//     Element e;
+//     struct Nodeinfo*next;
+// };
+// typedef struct NodeInfo *Node;
+// typedef struct NodeInfo *Stack;
+// Stack create(){
+//     Node header=new NodeInfo;
+//     header->next=nullptr;
+//     return header;
+// }
+// int is_empty(Stack S){
+//     return S->next==nullptr;
+// }
+// void push(Stack S,Element e){
+//     Node newnode= new NodeInfo;
+//     newnode->e=e;
+//     nenwode->next=S->next;
+//     S->next=newnode;
+// }
+// Node pop(Stack S){
+//     if(is_empty(S)){
+//         return NULL;
+//     }
+
+
+// }
+// int main(){
+//    freopen("input.txt","r",stdin);
+//    freopen("output.txt","w",stdout);
+   
+// }

@@ -155,7 +155,6 @@ int main(){
    cout<<"\nInorder Tree:";inorder(root);
    cout<<"\nPreorder Tree:";preorder(root);
    cout<<"\nPostorder Tree:";postorder(root);
-   return 0;
    cout<<"\nPostorder Tree:";postorder(root);
    int key;
    cout << "\n\nNhap gia tri can tim predecessor va successor: ";

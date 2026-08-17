@@ -8,7 +8,6 @@ struct heapsortinfo{
 typedef heapsortinfo* heapsort;
 heapsort create(int a[],int capacity){
     heapsort newh= new heapsortinfo;
-    if(newh==nullptr)return nullptr;
     newh->length=capacity;
     newh->heapsize=capacity;
     newh->array=new int[capacity];

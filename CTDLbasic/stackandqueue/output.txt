@@ -1,3 +1,0 @@
-Id: 1 Name:Nguyen van a
-Id: 2 Name:Nguyen van b
-Id: 3 Name:Nguyen van c

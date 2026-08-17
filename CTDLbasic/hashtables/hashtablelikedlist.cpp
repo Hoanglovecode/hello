@@ -9,15 +9,16 @@ struct Node{
     }
 };
 typedef struct Node* node;
-struct hashtable{
+struct Hashtable{
     int capacity;
     node *table;
 };
+typedef struct Hashtable* hashtable;
 int hashfunction(int key,int capacity){
     return key%capacity;
 }
-hashtable* createhashtable(int capacity){
-    hashtable* ht=new hashtable;
+hashtable createhashtable(int capacity){
+    hashtable ht=new Hashtable;
     ht->capacity=capacity;
     ht->table=new node[capacity];
     for(int i=0;i<capacity;i++){
@@ -25,13 +26,13 @@ hashtable* createhashtable(int capacity){
     }
     return ht;
 }
-void insert(hashtable*ht,int key){
+void insert(hashtable ht,int key){
     int index=hashfunction(key,ht->capacity);
     node newnode=new Node(key);
     newnode->next=ht->table[index];
     ht->table[index]=newnode;
 }
-bool search(hashtable* ht,int key){
+bool search(hashtable ht,int key){
     int index=hashfunction(key,ht->capacity);
     node cur=ht->table[index];
     while(cur){
@@ -41,7 +42,7 @@ bool search(hashtable* ht,int key){
     }
     return false;
 }
-void remove(hashtable* ht,int key){
+void remove(hashtable ht,int key){
     int index=hashfunction(key,ht->capacity);
     node cur=ht->table[index];
     node prev=nullptr;
@@ -58,7 +59,7 @@ void remove(hashtable* ht,int key){
         cur=cur->next;
     }
 }
-void printhashtable(hashtable* ht){
+void printhashtable(hashtable ht){
     for(int i=0;i<ht->capacity;i++){
         cout<<"["<<i<<"]:";
         node cur=ht->table[i];
@@ -70,9 +71,7 @@ void printhashtable(hashtable* ht){
     }
 }
 int main(){
-   freopen("input.txt","r",stdin);
-   freopen("output.txt","w",stdout);
-   hashtable* ht=createhashtable(10);
+   hashtable ht=createhashtable(10);
    insert(ht,15);
    insert(ht,25);
    insert(ht,35);
